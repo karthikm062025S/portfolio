@@ -1,0 +1,188 @@
+/* ---------- Palettes ---------- */
+
+/* LIGHT PALETTE */
+:root {
+  --l-ground: #e8ede7;
+  --l-mat: #f2f4f0;
+  --l-ink: #171d16;
+  --l-muted: #54604f;
+  --l-hair: #ccd6cc;
+  --l-accent: #7d2d26;
+  --l-btn: #7d2d26;
+  --l-btn-ink: #f4f1e4;
+  --l-btn-hover: #692520;
+  --l-scrim: rgb(232 237 231 / .6);
+}
+
+/* DARK PALETTE: the one block to edit for a dark palette swap */
+:root {
+  --d-ground: #232b24;
+  --d-mat: #2b342c;
+  --d-ink: #e8e4df;
+  --d-muted: #a3ab9e;
+  --d-hair: #3b453c;
+  --d-accent: #de8479;
+  --d-btn: #de8479;
+  --d-btn-ink: #232b24;
+  --d-btn-hover: #e8998f;
+  --d-scrim: rgb(35 43 36 / .6);
+}
+
+/* Theme wiring: light by default, dark from the system unless the toggle chose light, or from the toggle */
+:root {
+  --ground: var(--l-ground); --mat: var(--l-mat); --ink: var(--l-ink); --muted: var(--l-muted); --hair: var(--l-hair);
+  --accent: var(--l-accent); --btn: var(--l-btn); --btn-ink: var(--l-btn-ink); --btn-hover: var(--l-btn-hover); --scrim: var(--l-scrim);
+  --art-l: block; --art-d: none; --sun: none; --moon: block; color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: var(--d-ground); --mat: var(--d-mat); --ink: var(--d-ink); --muted: var(--d-muted); --hair: var(--d-hair);
+    --accent: var(--d-accent); --btn: var(--d-btn); --btn-ink: var(--d-btn-ink); --btn-hover: var(--d-btn-hover); --scrim: var(--d-scrim);
+    --art-l: none; --art-d: block; --sun: block; --moon: none; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: var(--d-ground); --mat: var(--d-mat); --ink: var(--d-ink); --muted: var(--d-muted); --hair: var(--d-hair);
+  --accent: var(--d-accent); --btn: var(--d-btn); --btn-ink: var(--d-btn-ink); --btn-hover: var(--d-btn-hover); --scrim: var(--d-scrim);
+  --art-l: none; --art-d: block; --sun: block; --moon: none; color-scheme: dark;
+}
+
+/* ---------- Tokens ---------- */
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --pad: 16px;
+  --gap: 24px;
+  --sec: 64px;
+  --f-serif: var(--font-serif), Georgia, serif;
+  --f-sans: var(--font-sans), system-ui, sans-serif;
+  --f-mono: var(--font-mono), ui-monospace, monospace;
+}
+
+/* ---------- Base ---------- */
+*, *::before, *::after { box-sizing: border-box }
+html { -webkit-font-smoothing: antialiased; text-size-adjust: 100% }
+body { margin: 0; background: url(/grain.png) repeat, var(--ground); color: var(--ink); font: 400 clamp(16px, 0.9768rem + 0.0952vw, 17px)/1.55 var(--f-sans); overflow-x: hidden }
+h1, h2, h3, p, ol, ul, figure { margin: 0; padding: 0 }
+ol, ul { list-style: none }
+a { color: var(--accent); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .22em; text-decoration-color: color-mix(in srgb, var(--accent) 40%, transparent) }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px }
+.i { flex: none; display: block }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap }
+.wrap { max-width: 1440px; margin-inline: auto; padding-inline: max(var(--pad), env(safe-area-inset-left)) max(var(--pad), env(safe-area-inset-right)) }
+.label, .num { font: 400 clamp(12px, 0.7268rem + 0.0952vw, 13px)/1.4 var(--f-mono); color: var(--muted) }
+.num { color: var(--accent) }
+
+/* ---------- Art ---------- */
+.art-l { display: var(--art-l) }
+.art-d { display: var(--art-d) }
+.wash img, .band-art img { object-fit: cover }
+.wash { position: absolute; z-index: -1; pointer-events: none; opacity: var(--o) }
+.wash-m { --o: .10; top: 0; left: 0; right: 0; height: 45dvh; mask-image: linear-gradient(to bottom, transparent 56px, #000 104px, #000 200px, transparent 264px) }
+.wash-m img { object-position: 75% 30% }
+.wash-d { display: none }
+.wash-d img { object-position: 60% 40% }
+.washrow { position: relative }
+
+/* ---------- Top row + hero ---------- */
+.top { display: flex; justify-content: space-between; align-items: center; min-height: 72px }
+.mark { font: 400 clamp(17px, 1.0393rem + 0.0952vw, 18px)/1 var(--f-serif); color: var(--ink); text-decoration: none; display: inline-flex; align-items: center; min-height: 44px }
+.top-r { display: flex; align-items: center; gap: 8px }
+.theme { width: 44px; height: 44px; display: grid; place-items: center; background: none; border: 0; padding: 0; color: var(--ink); cursor: pointer }
+.theme .i-sun { display: var(--sun) }
+.theme .i-moon { display: var(--moon) }
+.top-r a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding-inline: 4px }
+.hero { padding-top: 48px }
+.name { font: 400 clamp(52px, 2.2286rem + 4.1905vw, 96px)/0.98 var(--f-serif); letter-spacing: -0.02em; font-optical-sizing: auto; text-wrap: balance }
+.line { font: 400 clamp(22px, 1.1893rem + 0.7619vw, 30px)/1.25 var(--f-serif); margin-top: 16px; max-width: 22ch; text-wrap: balance }
+.contact { margin-top: 32px; display: flex; flex-direction: column; gap: 4px; font-size: 15px }
+.contact li { display: flex; flex-wrap: wrap; gap: 4px 16px }
+.contact a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px }
+.copy { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px 0 12px; border: 0; border-radius: 2px; background: var(--btn); color: var(--btn-ink); font: 500 15px/1 var(--f-sans); cursor: pointer }
+.copy:active { transform: scale(0.97) }
+html:not(.js) .copy { display: none }
+.copy .i-check, .copy.ok .i-copy { display: none }
+.copy.ok .i-check { display: block }
+.about { margin-top: var(--sec); font-size: clamp(18px, 1.0554rem + 0.2857vw, 21px); line-height: 1.45; max-width: 62ch; text-wrap: pretty }
+
+/* ---------- Sections ---------- */
+.sec { margin-top: var(--sec) }
+.head { font: 400 clamp(22px, 1.2357rem + 0.5714vw, 28px)/1.15 var(--f-serif); display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px }
+.rows > li { border-top: 1px solid var(--hair); padding-block: 24px }
+.rows > li:last-child { border-bottom: 1px solid var(--hair) }
+.role { font-weight: 550 }
+.place { color: var(--muted) }
+.r-date { margin-bottom: 4px }
+.r-date span { white-space: nowrap }
+.r-line { margin-top: 8px; text-wrap: pretty; max-width: 40em }
+.tag { display: flex; align-items: center; gap: 8px; margin-bottom: 4px }
+.pname { font: 600 clamp(19px, 1.1411rem + 0.1905vw, 21px)/1.2 var(--f-sans); letter-spacing: -0.01em }
+.pdesc { margin-top: 8px; text-wrap: pretty; max-width: 40em }
+.stack { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 16px; color: var(--muted) }
+.stack li { display: flex; align-items: center; gap: 8px; font: 400 11px/1.4 var(--f-mono) }
+.sm { flex: none; display: block }
+.links { display: flex; gap: 4px 24px; margin-top: 8px }
+.links a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px }
+.edu p + p { margin-top: 8px }
+
+/* ---------- Contact band ---------- */
+.band { position: relative; margin-top: var(--sec); isolation: isolate }
+.band-art { position: absolute; inset: 0; z-index: 0; opacity: .2; mask-image: linear-gradient(to bottom, transparent, #000 25%, #000 75%, transparent) }
+.band-art img { object-position: 62% 50% }
+.band::before { content: ""; position: absolute; inset: 0; z-index: 1; background: var(--scrim) }
+.band-in { padding-block: 64px; position: relative; z-index: 2 }
+.band .head { margin-bottom: 12px }
+.band p, .band .num { color: var(--ink) }
+.band-mail a { color: var(--ink); text-decoration-color: color-mix(in srgb, var(--ink) 45%, transparent) }
+.band-mail { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; margin-top: 20px }
+.band-mail a { font: 450 clamp(20px, 1.1107rem + 0.5714vw, 26px)/1.2 var(--f-sans); display: inline-flex; align-items: center; gap: 8px; min-height: 44px; overflow-wrap: anywhere }
+footer { padding-block: 24px }
+
+/* ---------- 768 ---------- */
+@media (min-width: 768px) {
+  :root { --pad: 32px }
+  .exp .rows > li, .edu .rows > li { display: grid; grid-template-columns: 120px minmax(0, 1fr); column-gap: var(--gap); align-items: first baseline }
+  .r-date { margin-bottom: 0 }
+}
+
+/* ---------- 1024: the 12-column grid ---------- */
+@media (min-width: 1024px) {
+  :root { --pad: 64px; --sec: 96px }
+  .g { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap) }
+  .hero { padding-top: 72px }
+  .name { grid-column: 3/10; grid-row: 1; align-self: last baseline }
+  .contact { grid-column: 10/13; grid-row: 1; align-self: last baseline; margin-top: 0; position: relative; top: 5px }
+  .line { grid-column: 3/8; grid-row: 2; margin-top: 20px; max-width: none }
+  .about { grid-column: 3/9 }
+  .wash-m { display: none }
+  .wash-d {
+    --o: .16; display: block; left: 50%; right: 0; top: -48px; bottom: -24px;
+    mask-image: linear-gradient(to right, transparent 240px, #000 440px), linear-gradient(to bottom, transparent, #000 35%, #000 60%, transparent);
+    mask-composite: intersect;
+  }
+  .exp { margin-top: var(--gap) }
+  .sec .head { grid-column: 1/3; margin: 0; padding-top: 24px; flex-direction: column; gap: 4px }
+  .sec .rows { grid-column: 3/13 }
+  .exp .rows { grid-column: 3/11 }
+  .proj .rows > li { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); column-gap: var(--gap) }
+  .p-main { grid-column: 1/8 }
+  .links { grid-column: 8/11; flex-direction: column; align-items: flex-start; margin-top: 0; gap: 0 }
+  .edu .rows { grid-column: 3/11 }
+  .band::before { background: linear-gradient(to right, var(--scrim) 0, var(--scrim) 50%, transparent 75%) }
+  .band-in { padding-block: 0; min-height: min(100vw / 2.8, 560px); display: grid; align-content: center }
+  .band-in > div { grid-column: 3/8 }
+}
+
+/* ---------- Hover, motion ---------- */
+@media (hover: hover) and (pointer: fine) {
+  a:hover { text-decoration-color: currentColor }
+  .copy:hover { background: var(--btn-hover) }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .copy { transition: transform 160ms ease-out }
+  html.js .reveal { opacity: 0; transform: translateY(12px) }
+  html.js .reveal.in { opacity: 1; transform: none; transition: opacity 500ms var(--ease-out), transform 500ms var(--ease-out) }
+  @supports (animation-timeline: scroll()) {
+    .wash { animation: washout linear both; animation-timeline: scroll(root) }
+    @keyframes washout { 0% { opacity: var(--o) } 30%, 100% { opacity: 0 } }
+  }
+}
