@@ -130,7 +130,7 @@ export const projects: Project[] = [
 
 export const education = {
   date: "May 2028",
-  school: "Virginia Tech · B.S. Computer Science · GPA 3.96 · Blacksburg, VA",
+  school: "Virginia Tech · B.S. Computer Science · GPA 3.96 · Blacksburg, VA", // no-break inside each segment so a phone never splits "GPA" from "3.96"
   interests: "Away from the keyboard, I play golf and lift.",
 };
 

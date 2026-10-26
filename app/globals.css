@@ -99,7 +99,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 .contact a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px }
 .copy { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px 0 12px; border: 0; border-radius: 2px; background: var(--btn); color: var(--btn-ink); font: 500 15px/1 var(--f-sans); cursor: pointer }
 .copy:active { transform: scale(0.97) }
-html:not(.js) .copy { display: none }
+html:not(.js) .copy, html:not(.js) .theme { display: none }
 .copy .i-check, .copy.ok .i-copy { display: none }
 .copy.ok .i-check { display: block }
 .about { margin-top: var(--sec); font-size: clamp(18px, 1.0554rem + 0.2857vw, 21px); line-height: 1.45; max-width: 62ch; text-wrap: pretty }
