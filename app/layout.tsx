@@ -24,6 +24,7 @@ const commitMono = localFont({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://karthikmandli.vercel.app"),
   title: identity.name,
   description: identity.description,
   openGraph: {
