@@ -7,7 +7,7 @@ export const identity = {
   name: "Karthik Mandli",
   line: "Computer science at Virginia Tech.",
   description:
-    "Karthik Mandli studies computer science at Virginia Tech. He likes building AI products and evaluating whether they work.",
+    "Karthik Mandli studies computer science at Virginia Tech. Projects: Scout, Prospect, Witness.",
 };
 
 export const links = {
