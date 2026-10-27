@@ -167,7 +167,6 @@ summary .r-title, summary .r-plain { padding-right: 48px }
 .r-body p { color: var(--ink) }
 .r-body p + p { margin-top: calc(10 * var(--k)) }
 .r-body .note { margin-bottom: 8px; color: var(--muted); font-family: var(--f-mono) }
-.r-body .note + p { margin-top: 0 }
 .tags { display: flex; flex-wrap: wrap; gap: 10px 24px; margin-top: calc(16 * var(--k)) }
 .tags li { display: inline-flex; align-items: center; gap: 8px; font: 400 calc(13 * var(--k))/1.4 var(--f-mono); color: var(--muted) }
 .tags svg { flex: none; display: block; width: 1.3333em; height: 1.3333em }

@@ -37,7 +37,7 @@ export function CopyEmail({ email }: { email: string }) {
       <button ref={button} className={copied ? "copy ok" : "copy"} type="button" onClick={copy}>
         <Icon name="copy" />
         <Icon name="check" />
-        <span className="t">{copied ? "Copied" : "Copy email"}</span>
+        <span>{copied ? "Copied" : "Copy email"}</span>
       </button>
       <span className="sr" aria-live="polite">{copied ? "Copied" : ""}</span>
     </>

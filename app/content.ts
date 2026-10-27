@@ -5,10 +5,7 @@ import type { ArchDiagram } from "./diagrams/types";
 import type { IconName } from "./components/Icon";
 import type { MarkName } from "./components/Mark";
 
-// Every word on the page lives here.
-
-// Open rows show the short problem story; false falls back to diagram, tags and links only.
-export const showStories = true;
+// Page copy lives here; diagram labels live in diagrams/*.ts.
 
 export const identity = {
   name: "Karthik Mandli",

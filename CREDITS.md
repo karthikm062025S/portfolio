@@ -10,7 +10,7 @@ Each is licensed under the SIL Open Font License 1.1. The license ships beside t
 
 ## Icons
 
-- Interface icons: **Phosphor Icons**, MIT (https://phosphoricons.com). The glyphs are inlined in `app/components/Icon.tsx`.
+- Interface icons: **Phosphor Icons**, MIT (https://phosphoricons.com). The glyphs are inlined in `app/components/Icon.tsx` and `app/diagrams/glyphs.tsx`.
 - Brand marks: **thesvg** (https://thesvg.org), inlined in `app/components/Mark.tsx`. The Next.js, TypeScript, Supabase, GitHub Actions, Model Context Protocol, Databricks, Python, C++, PostgreSQL, Docker, React, Node.js, PyTorch, Hugging Face, LangChain, Linux and JUnit 5 marks are published there as CC0 1.0; the AWS, DynamoDB, Java and JavaScript marks as MIT. The Git logo by Jason Long is licensed under the Creative Commons Attribution 3.0 Unported License (https://creativecommons.org/licenses/by/3.0/), from https://git-scm.com/downloads/logos, shown here in one color. Brand names and logos belong to their owners and appear here for identification only.
 
 Upstream MIT notices (the notice below applies to the Phosphor glyphs and the four MIT marks):

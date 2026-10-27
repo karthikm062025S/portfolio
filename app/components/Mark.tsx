@@ -29,7 +29,7 @@ export type MarkName = keyof typeof MARKS;
 export function Mark({ name }: { name: MarkName }) {
   const m = MARKS[name];
   return (
-    <svg className="sm" width="18" height="18" fill="currentColor" fillRule={m.evenodd ? "evenodd" : undefined} aria-hidden="true" focusable="false" viewBox={m.viewBox} xmlns="http://www.w3.org/2000/svg">
+    <svg width="18" height="18" fill="currentColor" fillRule={m.evenodd ? "evenodd" : undefined} aria-hidden="true" focusable="false" viewBox={m.viewBox} xmlns="http://www.w3.org/2000/svg">
       {m.d.map((d, i) => <path key={i} d={d} />)}
     </svg>
   );

@@ -5,7 +5,7 @@ import { DiagramPause } from "./components/DiagramPause";
 import { Icon } from "./components/Icon";
 import { Mark } from "./components/Mark";
 import { ThemeToggle } from "./components/ThemeToggle";
-import { education, experience, footer, golf, identity, links, nav, projects, showStories, stack, type Story as StoryLines, type Tag } from "./content";
+import { education, experience, footer, golf, identity, links, nav, projects, stack, type Story as StoryLines, type Tag } from "./content";
 
 const external = { target: "_blank", rel: "noopener" } as const;
 const mail = { href: links.compose, ...external, "aria-label": `Email ${links.email} (opens Gmail in a new tab)` };
@@ -91,7 +91,7 @@ export default function Home() {
         <Section id="experience" title="Experience">
           <ul className="rows">
             {experience.map((r, i) => (
-              <li key={r.place} className="x reveal" style={stagger(i)}>
+              <li key={r.place} className="reveal" style={stagger(i)}>
                 <details>
                   <summary>
                     <span className="r-date label">{r.date}</span>
@@ -101,7 +101,7 @@ export default function Home() {
                     {toggle}
                   </summary>
                   <div className="r-body">
-                    {showStories && r.story ? <Story lines={r.story} /> : r.lines?.map((l) => <p key={l}>{l}</p>)}
+                    {r.story ? <Story lines={r.story} /> : r.lines?.map((l) => <p key={l}>{l}</p>)}
                   </div>
                 </details>
               </li>
@@ -112,7 +112,7 @@ export default function Home() {
         <Section id="projects" title="Projects">
           <ul className="rows reveal">
             {projects.map((p) => (
-              <li key={p.name} className="x proj">
+              <li key={p.name} className="proj">
                 <details>
                   <summary>
                     <span className="r-title"><b>{p.name}</b></span>
@@ -123,7 +123,7 @@ export default function Home() {
                   <div className="r-body">
                     <p className="note label">{p.note}</p>
                     <Arch d={p.arch} />
-                    {showStories && <Story lines={p.story} />}
+                    <Story lines={p.story} />
                     <Tags items={p.stack} label="Built with" />
                   </div>
                 </details>
