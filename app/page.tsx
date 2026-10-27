@@ -1,7 +1,6 @@
 import type { CSSProperties, ReactNode } from "react";
 import { CopyEmail } from "./components/CopyEmail";
 import { Arch } from "./components/Arch";
-import { Diagram } from "./components/Diagram";
 import { DiagramPause } from "./components/DiagramPause";
 import { Icon } from "./components/Icon";
 import { Mark } from "./components/Mark";
@@ -102,7 +101,6 @@ export default function Home() {
                     {toggle}
                   </summary>
                   <div className="r-body">
-                    {r.diagram && <Diagram name={r.diagram} />}
                     {showStories && r.story ? <Story lines={r.story} /> : r.lines?.map((l) => <p key={l}>{l}</p>)}
                   </div>
                 </details>
@@ -124,7 +122,7 @@ export default function Home() {
                   </summary>
                   <div className="r-body">
                     <p className="note label">{p.note}</p>
-                    {p.arch ? <Arch d={p.arch} /> : <Diagram name={p.diagram} />}
+                    <Arch d={p.arch} />
                     {showStories && <Story lines={p.story} />}
                     <Tags items={p.stack} label="Built with" />
                   </div>

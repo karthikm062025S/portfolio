@@ -1,5 +1,6 @@
-import type { DiagramName } from "./components/Diagram";
 import { scoutMain } from "./diagrams/scout";
+import { prospectMain } from "./diagrams/prospect";
+import { witnessMain } from "./diagrams/witness";
 import type { ArchDiagram } from "./diagrams/types";
 import type { IconName } from "./components/Icon";
 import type { MarkName } from "./components/Mark";
@@ -44,7 +45,7 @@ export type Tag = { label: string; mark?: MarkName; glyph?: IconName };
 // Three labelled lines: the problem, what was chosen (or found) and the proof.
 export type Story = { label: string; text: string }[];
 
-export type ExperienceRow = { date: string; place: string; role: string; plain: string; lines?: string[]; tag?: Tag; diagram?: DiagramName; story?: Story };
+export type ExperienceRow = { date: string; place: string; role: string; plain: string; lines?: string[]; tag?: Tag; story?: Story };
 
 export const experience: ExperienceRow[] = [
   {
@@ -53,11 +54,10 @@ export const experience: ExperienceRow[] = [
     role: "Multimodal AI researcher",
     plain: "Tested whether vision-language models truly see fine-grained differences or just read the label.",
     tag: { label: "Evaluation", glyph: "ruler" },
-    diagram: "research",
     story: [
-      { label: "Problem", text: "Reference text carried the species name, so accuracy might measure reading, not seeing." },
-      { label: "Found", text: "The name stripper missed hyphenated names; its self-check shared the blind spot." },
-      { label: "Chose", text: "Fixed it, re-ran, and kept the lower result: without names, 86.7% fell to 25.4%." },
+      { label: "Question", text: "Do vision-language models see fine-grained differences, or just read the names in the text? Explored over eight months." },
+      { label: "Built", text: "Evaluation pipelines with leakage guards and controls, refined across several framings of the question." },
+      { label: "Found", text: "Showed the model was reading, not seeing: removing species names cut accuracy from 86.7% to 25.4% on 5,794 images." },
     ],
   },
   {
@@ -78,7 +78,7 @@ export const experience: ExperienceRow[] = [
 
 export type ProjectLink = { label: string; href: string; aria: string };
 
-export type Project = { name: string; note: string; plain: string; tag: Tag; diagram: DiagramName; arch?: ArchDiagram; story: Story; stack: Tag[]; links: ProjectLink[] };
+export type Project = { name: string; note: string; plain: string; tag: Tag; arch: ArchDiagram; story: Story; stack: Tag[]; links: ProjectLink[] };
 
 export const projects: Project[] = [
   {
@@ -86,12 +86,11 @@ export const projects: Project[] = [
     note: "Live",
     plain: "Pulls fresh internship postings from company job boards on a schedule, and flags when a scan silently returns nothing.",
     tag: { label: "Data infrastructure", glyph: "database" },
-    diagram: "scout",
     arch: scoutMain,
     story: [
       { label: "Problem", text: "A job board can return HTTP 200 with zero postings. Nothing fails." },
-      { label: "Chose", text: "A per-board baseline, flagged after two empty runs, so off-season never false-alarms." },
-      { label: "Proof", text: "A canary and 451 automated tests guard four unattended production jobs." },
+      { label: "Chose", text: "Each board keeps a baseline; one that returned 3 or more postings is flagged after two empty runs." },
+      { label: "Proof", text: "A canary watches 877 of 999 boards, a run where under half answer opens an outage issue, and 450+ tests guard it." },
     ],
     stack: [
       { label: "Supabase", mark: "supabase" },
@@ -105,11 +104,11 @@ export const projects: Project[] = [
     note: "VTHacks 14",
     plain: "Plans a student's courses and clubs toward a target job; agents read, code decides.",
     tag: { label: "Agentic systems", glyph: "robot" },
-    diagram: "prospect",
+    arch: prospectMain,
     story: [
-      { label: "Problem", text: "The roadmap agent can propose a course or club that does not exist." },
-      { label: "Chose", text: "Reject and name the unknown step, so one bad step never sinks the plan." },
-      { label: "Proof", text: "Every course and club checked against 5,956 VT courses and 765 clubs; 1,243 tests." },
+      { label: "Problem", text: "A plan built by language models can name courses that do not exist or rank jobs by guesswork." },
+      { label: "Chose", text: "Models only read and propose; code ranks the jobs and checks every course and club against the real catalog." },
+      { label: "Proof", text: "Checked against 5,956 VT courses and 765 clubs; four agent identities active on GoDaddy ANS; 1,243 tests pass." },
     ],
     stack: [
       { label: "Databricks", mark: "databricks" },
@@ -125,10 +124,10 @@ export const projects: Project[] = [
     note: "Team of four · AWS hackathon · backend and architecture",
     plain: "Turns a photo of a housing problem into a complaint that cites the exact statute, with every citation checked.",
     tag: { label: "Multimodal AI", glyph: "image" },
-    diagram: "witness",
+    arch: witnessMain,
     story: [
       { label: "Problem", text: "A model writing a legal complaint can cite a statute that does not exist." },
-      { label: "Chose", text: "Keep a citation only if it exactly matches a retrieved statute row." },
+      { label: "Chose", text: "Keep a model citation only if its section label exactly matches a statute row retrieved for that request." },
       { label: "Proof", text: "Every citation checked against 30+ Virginia provisions. It proves existence, not applicability." },
     ],
     stack: [

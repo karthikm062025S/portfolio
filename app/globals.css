@@ -197,36 +197,13 @@ details[open] .pm .i { transform: rotate(45deg) }
 }
 
 /* ---------- Diagrams ---------- */
-/* Ink by default, complete and still. The row variant (left to right) needs the full 840px column, so it shows from 1024px up;
-   below that the top-down phone variant keeps every label at 12px. */
+/* Shared frame and keyframes for the architecture diagrams (section below). */
 .dg { margin: 6px 0 4px }
 .dg svg { display: block; width: 100%; height: auto; overflow: visible; color: var(--ink); font-family: var(--f-mono); letter-spacing: .02em }
-.dg .m { color: var(--muted) }
 .dg text { fill: currentColor }
-.dg .e, .dg .n { fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round }
-.dg .pk { display: none; fill: none; stroke: var(--orange); stroke-width: 2.5; stroke-linecap: round; stroke-dasharray: var(--pd) 100 }
-.dg .dg-row { display: none }
-.dg .dg-phone { max-width: 358px }
-@media (max-width: 389px) { .dg .dg-phone text { font-size: 14px } }
-@media (max-width: 339px) { .dg .dg-phone text { font-size: 15px } }
-@media (min-width: 1024px) {
-  .dg .dg-row { display: block }
-  .dg .dg-phone { display: none }
-}
-/* On open, with JS and motion allowed: each beat (--s) strokes a node in, fades its glyph and label, then draws its edge in
-   orange; when the last beat lands every edge settles to ink (--T) and one packet runs the route while the row is in view. */
-@media (prefers-reduced-motion: no-preference) {
-  html.js details[open] .dg .n { stroke-dasharray: 1 1.1; animation: dg-draw .4s var(--ease-out) calc(var(--s) * .25s) both }
-  html.js details[open] .dg .f { animation: dg-fade .3s var(--ease-out) calc(var(--s) * .25s + .12s) both }
-  html.js details[open] .dg .e { stroke-dasharray: 1 1.1; animation: dg-draw .4s var(--ease-out) calc(var(--s) * .25s) both, dg-settle .4s ease-out var(--T) both }
-  html.js details[open] .dg .a { animation-duration: .15s, .4s; animation-delay: calc(var(--s) * .25s + .28s), var(--T) }
-  html.js details[open] .dg .pk { display: block; animation: dg-run 8s linear calc(var(--T) + .4s) infinite both }
-  html.js details[open] .dg[data-off] .pk { animation-play-state: paused }
-}
 @keyframes dg-draw { from { stroke-dashoffset: 1.01 } to { stroke-dashoffset: 0 } }
 @keyframes dg-fade { from { opacity: 0 } }
 @keyframes dg-settle { from { stroke: var(--orange); stroke-width: 2 } to { stroke: var(--ink); stroke-width: 1.5 } }
-@keyframes dg-run { from { stroke-dashoffset: var(--pd) } to { stroke-dashoffset: -100 } }
 
 /* ---------- Architecture diagrams (Arch.tsx) ---------- */
 /* Same ink-by-default rule as above: everything is complete and still; orange is only the packet and a sync edge while it draws in. */

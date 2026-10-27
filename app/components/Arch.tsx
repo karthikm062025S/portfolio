@@ -3,11 +3,11 @@ import { GLYPHS } from "../diagrams/glyphs";
 import type { ArchDiagram, ArchEdge, ArchNode, Pt, Side } from "../diagrams/types";
 import { ArchExpand } from "./ArchExpand";
 
-// Data-driven architecture diagram (types in app/diagrams/types.ts). Same grammar as Diagram.tsx: ring + glyph for a service,
+// Data-driven architecture diagram (types in app/diagrams/types.ts). Grammar: ring + glyph for a service,
 // rounded square for a gate, cylinder for a store, muted x for a drop. The draw-in beats and the travelling packet are CSS
 // (globals.css "Architecture diagrams"); orange is only ever the packet and a sync edge while it draws in.
 
-const STEP = 0.25; // seconds per beat (same as Diagram.tsx)
+const STEP = 0.25; // seconds per beat
 const SPEED = 240; // packet units per second
 const R = 15; // ring radius
 const dist = (a: Pt, b: Pt) => Math.hypot(a[0] - b[0], a[1] - b[1]);
