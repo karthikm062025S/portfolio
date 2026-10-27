@@ -112,7 +112,7 @@ html.docked .nav-name { grid-template-columns: 1fr; visibility: visible; margin-
 .hlinks { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 24px; margin-top: 24px; font-size: calc(15 * var(--k)) }
 .hlinks a { display: inline-flex; align-items: center; gap: 10px; min-height: 48px }
 .hlinks .i { width: 1.15em; height: 1.15em }
-.field { white-space: nowrap }
+.field .nw { white-space: nowrap }
 .field .i { display: inline-block; width: .95em; height: .95em; margin-right: .3em; vertical-align: -.1em }
 .hlinks .pill { padding-inline: calc(26 * var(--k)); border-radius: 999px; background: var(--pill); color: var(--pill-ink); font-weight: 500 }
 .hlinks .pill:focus-visible { outline-offset: 4px; border-radius: 999px }

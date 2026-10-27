@@ -56,7 +56,7 @@ export default function Home() {
       <header className="nav">
         <div className="nav-in">
           {/* Docks once the hero name has scrolled under the nav (html.docked, set in the boot script). */}
-          <div className="nav-name"><a href="#" aria-label={`${identity.name}, back to top`}>{first}<span className="last"> {rest.join(" ")}</span></a></div>
+          <div className="nav-name"><a href="#" aria-label={`${identity.name}, back to top`}>{first}<span className="last">{"00a0"}{rest.join(" ")}</span></a></div>
           <nav aria-label="Sections">
             <ul>{nav.map((n) => <li key={n.href}><a href={n.href}>{n.label}</a></li>)}</ul>
           </nav>
@@ -73,7 +73,9 @@ export default function Home() {
               {identity.fields.map((f, i) => (
                 <span key={f.label} className="field" style={{ "--i": i } as CSSProperties}>
                   {i === identity.fields.length - 1 && "and "}
-                  <Icon name={f.glyph} />{f.label}{i < identity.fields.length - 1 ? ", " : "."}
+                  {/* the glyph never wraps away from its first word */}
+                  <span className="nw"><Icon name={f.glyph} />{f.label.split(" ")[0]}</span>
+                  {f.label.slice(f.label.indexOf(" ") === -1 ? f.label.length : f.label.indexOf(" "))}{i < identity.fields.length - 1 ? ", " : "."}
                 </span>
               ))}
             </p>
