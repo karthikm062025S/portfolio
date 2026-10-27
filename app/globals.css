@@ -97,6 +97,11 @@ html:not(.js) .theme { display: none }
 .nav-in > nav { margin-right: auto }
 html.docked .nav-name { grid-template-columns: 1fr; visibility: visible; margin-right: 16px }
 @media (max-width: 519px) { .nav-name .last { display: none } }
+.nav-name, .theme { flex: none }
+.nav-name a { justify-content: flex-start }
+/* Small phones: tighten the links so the docked first name and the 44px theme toggle both fit; below 360px the name stays out. */
+@media (max-width: 399px) { .nav a { padding-inline: 2px } html.docked .nav-name { margin-right: 8px } }
+@media (max-width: 359px) { .nav-name { display: none } }
 @media (min-width: 640px) { html.docked .nav-name { margin-right: 24px } }
 @media (min-width: 1024px) { .nav-name a { font-size: calc(20 * var(--k)) } }
 
