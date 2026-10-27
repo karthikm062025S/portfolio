@@ -56,7 +56,7 @@ export default function Home() {
       <header className="nav">
         <div className="nav-in">
           {/* Docks once the hero name has scrolled under the nav (html.docked, set in the boot script). */}
-          <div className="nav-name"><a href="#" aria-label={`${identity.name}, back to top`}>{first}<span className="last">{"00a0"}{rest.join(" ")}</span></a></div>
+          <div className="nav-name"><a href="#" aria-label={`${identity.name}, back to top`}>{first}<span className="last">{" "}{rest.join(" ")}</span></a></div>
           <nav aria-label="Sections">
             <ul>{nav.map((n) => <li key={n.href}><a href={n.href}>{n.label}</a></li>)}</ul>
           </nav>
