@@ -8,6 +8,10 @@ Each is licensed under the SIL Open Font License 1.1. The license ships beside t
 - **Schibsted Grotesk**, The Schibsted Grotesk Project Authors (Schibsted, Bakken & Baeck). OFL 1.1: https://github.com/schibsted/schibsted-grotesk
 - **Commit Mono**, Eigil Nikolajsen. OFL 1.1: https://github.com/eigilnikolajsen/commit-mono
 
+## Golf
+
+The sources behind the ball flight and bounce model are listed in [golf/README.md](golf/README.md#sources); the bounce map is from Biber, Jones, Champneys, Green and Szalai, "Measurements and linearized models for golf ball bounce", arXiv 2302.02758 (2023).
+
 ## Icons
 
 - Interface icons: **Phosphor Icons**, MIT (https://phosphoricons.com). The glyphs are inlined in `app/components/Icon.tsx`.

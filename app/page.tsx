@@ -2,6 +2,7 @@ import type { CSSProperties, ReactNode } from "react";
 import { CopyEmail } from "./components/CopyEmail";
 import { Diagram } from "./components/Diagram";
 import { DiagramPause } from "./components/DiagramPause";
+import { Golf } from "./components/golf/Golf";
 import { Icon } from "./components/Icon";
 import { Mark } from "./components/Mark";
 import { ThemeToggle } from "./components/ThemeToggle";
@@ -148,6 +149,7 @@ export default function Home() {
 
         <Section id="golf" title="Off the keyboard">
           <p className="ok-line reveal">{golf}</p>
+          <Golf />
         </Section>
 
         <Section id="contact" title="Contact">

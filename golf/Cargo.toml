@@ -1,0 +1,22 @@
+[package]
+name = "golf"
+version = "0.2.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+doctest = false
+path = "src/lib.rs"
+
+[profile.release]
+opt-level = "z"
+lto = true
+panic = "abort"
+codegen-units = 1
+strip = true
+
+[profile.dev]
+panic = "abort"
+
+[profile.test]
+opt-level = 1

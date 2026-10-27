@@ -271,3 +271,46 @@ html:not(.js) .copy { display: none }
 }
 @keyframes name-rise { from { transform: translateY(105%) } }
 @keyframes hero-settle { from { opacity: 0; transform: translateY(8px) } }
+
+/* ---------- Golf ---------- */
+/* A hole drawn on a canvas. Sand and water are fills only, never text; --orange is only on the preview dots and the in-flight trail. */
+.golf { margin-top: calc(20 * var(--k)); --g-sand: #c9b68a; --g-water: #4d6a73 }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .golf { --g-sand: #8f8061; --g-water: #5f8791 }
+}
+:root[data-theme="dark"] .golf { --g-sand: #8f8061; --g-water: #5f8791 }
+.golf-stage { position: relative; width: 100%; aspect-ratio: 4 / 3; overflow: hidden; border: .5px solid var(--hair); border-radius: 2px; color: var(--ink) }
+@media (min-width: 768px) { .golf-stage { aspect-ratio: 16 / 9 } }
+@media (min-width: 1024px) { .golf-stage { aspect-ratio: 2 / 1 } }
+.golf-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: crosshair; -webkit-tap-highlight-color: transparent }
+.golf-canvas:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px }
+.golf-canvas[data-input="pointer"]:focus-visible { outline: none }
+.golf:not([data-state="ready"]) .golf-canvas { visibility: hidden }
+.golf-fallback { position: absolute; inset: 0; width: 100%; height: 100%; display: block }
+html.js .golf-fallback { display: none }
+html.js .golf[data-state="failed"] .golf-fallback { display: block }
+.golf-note { position: absolute; top: 10px; left: 12px; margin: 0; pointer-events: none }
+.golf-over { position: absolute; top: 12px; left: 12px; right: 12px; display: grid; justify-items: center; gap: 4px; padding: 12px; border: .5px solid var(--hair); border-radius: 2px; background: color-mix(in srgb, var(--ground) 94%, transparent); text-align: center }
+.golf-over-t { font: 400 clamp(20px, 1.1rem + .6vw, 26px)/1.15 var(--f-serif); letter-spacing: -.015em; color: var(--ink) }
+.golf-over-d { margin: 0 }
+.golf-over-b { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 8px }
+.golf-share { margin-top: 8px; max-width: 100%; white-space: pre-line; overflow-wrap: anywhere; user-select: all }
+.golf-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 20px; min-height: 44px; margin-top: 6px }
+.golf-hud { display: flex; flex: 1 1 12rem; flex-wrap: wrap; gap: 0 16px; margin: 0; letter-spacing: .04em }
+.golf-hud b { font-weight: 400; color: var(--ink) }
+.golf:not([data-state="ready"]) .golf-hud { visibility: hidden }
+.golf-src { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: calc(14 * var(--k)) }
+.golf-ctl > summary { display: flex; align-items: center; justify-content: flex-start; gap: 4px; width: max-content; min-height: 44px; padding: 0 12px 0 0 }
+.golf-ctl .pm { position: static; width: 28px; height: 44px }
+.golf-keys { display: grid; grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr)); gap: 8px; padding-bottom: 8px }
+.golf-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 18px; border: .5px solid var(--muted); border-radius: 999px; background: none; color: var(--ink); font: 500 15px/1 var(--f-sans); cursor: pointer }
+.golf-btn.pri { border-color: transparent; background: var(--pill); color: var(--pill-ink) }
+html:not(.js) .golf-hud, html:not(.js) .golf-ctl { display: none }
+@media (hover: hover) and (pointer: fine) {
+  .golf-src:hover { color: var(--ink) }
+  .golf-btn:hover { border-color: var(--ink) }
+  .golf-btn.pri:hover { background: color-mix(in srgb, var(--pill) 86%, #000) }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .golf-btn { transition: border-color .15s ease-out, background-color .2s ease-out }
+}
