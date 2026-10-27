@@ -67,7 +67,7 @@ function route(e: ArchEdge, nodes: Record<string, ArchNode>): Pt[] {
   const p0 = fn ? port(fn, fs, e.fromOff) : fc;
   if (mids[0]) { if (horiz(fs)) mids[0][1] = p0[1]; else mids[0][0] = p0[0]; }
   const last = mids[mids.length - 1] ?? (horiz(fs) ? ([tc[0], p0[1]] as Pt) : ([p0[0], tc[1]] as Pt));
-  const arrive = side(last, tc); // direction of travel into the target
+  const arrive = dist(last, tc) < 13 ? fs : side(last, tc); // aligned with no corner: keep travelling the way we left; direction of travel into the target
   const ts: Side = e.toSide ?? (arrive === "right" ? "left" : arrive === "left" ? "right" : arrive === "bottom" ? "top" : "bottom");
   const p1 = tn ? port(tn, ts, e.toOff) : tc;
   if (mids.length) { const m = mids[mids.length - 1]; if (horiz(ts)) m[1] = p1[1]; else m[0] = p1[0]; }
@@ -99,6 +99,28 @@ function Label({ x, y, text, anchor = "middle", up = false }: { x: number; y: nu
   return <text x={x} y={y0} textAnchor={anchor} fontSize={11}>{ls.map((l, i) => <tspan key={i} x={x} dy={i ? 13 : 0}>{l}</tspan>)}</text>;
 }
 
+type Place = { x: number; y: number; a: "start" | "middle" | "end"; up: boolean };
+function nodeLab(n: ArchNode): Place {
+  const [hw, hh] = ext(n), pos = n.pos ?? "bottom", mid = n.y + 4 - ((lines(n.label).length - 1) * 13) / 2;
+  return pos === "bottom" ? { x: n.x, y: n.y + hh + 14, a: "middle", up: false }
+    : pos === "top" ? { x: n.x, y: n.y - hh - 6, a: "middle", up: true }
+    : pos === "right" ? { x: n.x + hw + 8, y: mid, a: "start", up: false }
+    : pos === "left" ? { x: n.x - hw - 8, y: mid, a: "end", up: false }
+    : pos === "br" ? { x: n.x + hw + 2, y: n.y + hh + 12, a: "start", up: false }
+    : pos === "tr" ? { x: n.x + hw + 2, y: n.y - hh - 4, a: "start", up: true }
+    : { x: n.x - hw - 2, y: n.y - hh - 4, a: "end", up: true };
+}
+function edgeLab(e: ArchEdge, pts: Pt[]): Place {
+  const L = longest(pts), at = e.labelAt ?? (L.vertical ? ([L.mid[0] + 10, L.mid[1] + 4] as Pt) : ([L.mid[0], L.mid[1] - 8] as Pt));
+  return { x: at[0], y: at[1], a: e.labelAnchor ?? (L.vertical && !e.labelAt ? "start" : "middle"), up: !L.vertical || !!e.labelAt };
+}
+// estimated text box (11px mono is about 6.85 units a character), padded; the hairlines and the dashed boundary are cut away behind it
+function textBox(p: Place, text: string, cw = 6.85): [number, number, number, number] {
+  const ls = lines(text), w = Math.max(...ls.map((l) => l.length)) * cw, y0 = p.up ? p.y - (ls.length - 1) * 13 : p.y;
+  const x0 = p.a === "start" ? p.x : p.a === "end" ? p.x - w : p.x - w / 2;
+  return [x0 - 3, y0 - 11, x0 + w + 3, y0 + (ls.length - 1) * 13 + 4];
+}
+
 function Svg({ d, id, still }: { d: ArchDiagram; id: string; still?: boolean }) {
   const nodes = Object.fromEntries(d.nodes.map((n) => [n.id, n]));
   const edges = d.edges.map((e) => ({ e, pts: route(e, nodes) }));
@@ -123,28 +145,35 @@ function Svg({ d, id, still }: { d: ArchDiagram; id: string; still?: boolean }) 
     return { pd, css: `@keyframes ${id}-k${i}{0%,${s.toFixed(2)}%{stroke-dashoffset:${pd}}${en.toFixed(2)}%,100%{stroke-dashoffset:-100}}` };
   });
 
-  const parts: ReactNode[] = [];
+  const boxes = [
+    ...edges.filter(({ e }) => e.label).map(({ e, pts }) => textBox(edgeLab(e, pts), e.label!)),
+    ...d.nodes.map((n) => textBox(nodeLab(n), n.label)),
+    ...(d.boundary ? [textBox({ x: d.boundary.labelAt ?? d.boundary.x + d.boundary.w / 2, y: d.boundary.y + 3.5, a: "middle", up: false }, d.boundary.label, 7.6)] : []),
+  ];
+  const cut = `url(#${id}-m)`;
+  const parts: ReactNode[] = [
+    <mask key="mk" id={`${id}-m`} maskUnits="userSpaceOnUse" x={0} y={0} width={d.w} height={d.h}>
+      <rect x={0} y={0} width={d.w} height={d.h} fill="#fff" />
+      {boxes.map((b, i) => <rect key={i} x={b[0]} y={b[1]} width={b[2] - b[0]} height={b[3] - b[1]} fill="#000" />)}
+    </mask>,
+  ];
   d.zones.forEach((z, i) => {
-    if (i > 0) parts.push(<path key={`zr${i}`} className="az" d={`M${z.x},${d.boundary ? 34 : 14} V${d.h - 6}`} pathLength={1} style={beat(0)} />);
+    if (i > 0) parts.push(<path key={`zr${i}`} className="az" mask={cut} d={`M${z.x},${d.boundary ? 34 : 14} V${d.h - 6}`} pathLength={1} style={beat(0)} />);
     parts.push(<text key={`zl${i}`} className="zl af" x={z.x + 8} y={24} fontSize={11} style={beat(0)}>{z.label}</text>);
   });
   if (d.boundary) {
     const b = d.boundary, lx = b.labelAt ?? b.x + b.w / 2;
     parts.push(
       <g key="tb" className="af" style={beat(0)}>
-        <rect className="tb" x={b.x} y={b.y} width={b.w} height={b.h} rx={12} />
+        <rect className="tb" mask={cut} x={b.x} y={b.y} width={b.w} height={b.h} rx={12} />
         <text className="zl tbl" x={lx} y={b.y + 3.5} textAnchor="middle" fontSize={11}>{b.label}</text>
       </g>,
     );
   }
   edges.forEach(({ e, pts }, i) => {
-    const m = e.kind === "data" || e.kind === "failure", b = eb(e), L = longest(pts);
+    const m = e.kind === "data" || e.kind === "failure", b = eb(e);
     const cls = e.kind === "sync" ? "ae" : e.kind === "data" ? "ad thin" : e.kind === "async" ? "ax dash" : "ax dots";
-    const lab = e.label && (() => {
-      const at = e.labelAt ?? (L.vertical ? ([L.mid[0] + 10, L.mid[1] + 4] as Pt) : ([L.mid[0], L.mid[1] - 8] as Pt));
-      const anchor = e.labelAnchor ?? (L.vertical && !e.labelAt ? "start" : "middle");
-      return <Label x={at[0]} y={at[1]} text={e.label} anchor={anchor} up={!L.vertical || !!e.labelAt} />;
-    })();
+    const lab = e.label && (() => { const l = edgeLab(e, pts); return <Label x={l.x} y={l.y} text={e.label} anchor={l.a} up={l.up} />; })();
     parts.push(
       <g key={`e${i}`} className={m ? "m" : undefined} style={beat(b)}>
         <path className={cls} d={rounded(pts, 9)} pathLength={1} />
@@ -163,14 +192,7 @@ function Svg({ d, id, still }: { d: ArchDiagram; id: string; still?: boolean }) 
     if (n.kind === "client") gs = 26;
     if (n.kind === "dropped") gs = 14;
     if (n.kind === "store") gs = 0;
-    const pos = n.pos ?? "bottom", ln = lines(n.label).length, mid = n.y + 4 - ((ln - 1) * 13) / 2;
-    const lab = pos === "bottom" ? { x: n.x, y: n.y + hh + 14, a: "middle" as const, up: false }
-      : pos === "top" ? { x: n.x, y: n.y - hh - 6, a: "middle" as const, up: true }
-      : pos === "right" ? { x: n.x + hw + 8, y: mid, a: "start" as const, up: false }
-      : pos === "left" ? { x: n.x - hw - 8, y: mid, a: "end" as const, up: false }
-      : pos === "br" ? { x: n.x + hw + 2, y: n.y + hh + 12, a: "start" as const, up: false }
-      : pos === "tr" ? { x: n.x + hw + 2, y: n.y - hh - 4, a: "start" as const, up: true }
-      : { x: n.x - hw - 2, y: n.y - hh - 4, a: "end" as const, up: true };
+    const lab = nodeLab(n);
     parts.push(
       <g key={`n${n.id}`} className={muted ? "m" : undefined} style={beat(b)}>
         {shape}
