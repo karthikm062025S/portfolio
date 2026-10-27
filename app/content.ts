@@ -5,7 +5,7 @@ import type { MarkName } from "./components/Mark";
 // Every word on the page lives here.
 
 // Open rows show the short problem story; false falls back to diagram, tags and links only.
-export const showStories = false;
+export const showStories = true;
 
 export const identity = {
   name: "Karthik Mandli",
@@ -75,7 +75,7 @@ export type Project = { name: string; note: string; plain: string; tag: Tag; dia
 export const projects: Project[] = [
   {
     name: "Scout",
-    note: "Solo · live",
+    note: "Live",
     plain: "Pulls fresh internship postings from company job boards on a schedule, and flags when a scan silently returns nothing.",
     tag: { label: "Data infrastructure", glyph: "database" },
     diagram: "scout",
@@ -93,14 +93,14 @@ export const projects: Project[] = [
   },
   {
     name: "Prospect",
-    note: "Solo · VTHacks 14",
+    note: "VTHacks 14",
     plain: "Plans a student's courses and clubs toward a target job; agents read, code decides.",
     tag: { label: "Agentic systems", glyph: "robot" },
     diagram: "prospect",
     story: [
       { label: "Problem", text: "The roadmap agent can propose a course or club that does not exist." },
       { label: "Chose", text: "Reject and name the unknown step, so one bad step never sinks the plan." },
-      { label: "Proof", text: "Every step checked against 5,956 VT courses and 765 clubs; 1,243 tests." },
+      { label: "Proof", text: "Every course and club checked against 5,956 VT courses and 765 clubs; 1,243 tests." },
     ],
     stack: [
       { label: "Databricks", mark: "databricks" },
