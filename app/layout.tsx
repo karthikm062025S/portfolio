@@ -45,10 +45,10 @@ export const viewport: Viewport = {
   ],
 };
 
-// Runs before first paint: applies a saved theme (no flash) and marks JS as available. Once the DOM is parsed (now, or on DOMContentLoaded, with load as a backstop) it
-// matches the browser bar to the ground and reveals the section heads: the ones already in view directly (an
-// observer's first notification can wait for a frame that never comes), the rest through an IntersectionObserver that also
-// reveals every head above the one entering, so a fast flick or an anchor jump never leaves one hidden.
+// Runs before first paint: applies a saved theme (no flash) and marks JS as available. Once the DOM is parsed (now, or on
+// DOMContentLoaded, with load as a backstop) it matches the browser bar to the ground and reveals the blocks: the ones already
+// in view directly (an observer's first notification can wait for a frame that never comes), the rest through an
+// IntersectionObserver that also reveals every block above the one entering, so a fast flick or an anchor jump never leaves one hidden.
 const boot = `(function(){var r=document.documentElement;try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')r.dataset.theme=t}catch(e){}if(!('IntersectionObserver'in window))return;r.classList.add('js');var done=false;function go(){if(done)return;done=true;var c=getComputedStyle(r).getPropertyValue('--ground').trim();if(c)document.querySelectorAll('meta[name=theme-color]').forEach(function(m){m.content=c});var all=document.querySelectorAll('.reveal');var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)for(var i=0;i<all.length;i++){all[i].classList.add('in');io.unobserve(all[i]);if(all[i]===e.target)break}})},{rootMargin:'0px 0px -10% 0px'});all.forEach(function(el){if(el.getBoundingClientRect().top<innerHeight*.9)el.classList.add('in');else io.observe(el)})}if(document.readyState!=='loading')go();else document.addEventListener('DOMContentLoaded',go);addEventListener('load',go)})()`;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

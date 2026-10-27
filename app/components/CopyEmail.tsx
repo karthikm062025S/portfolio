@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Icon } from "./Icon";
+import { Icon } from "@/app/components/Icon";
 
 export function CopyEmail({ email }: { email: string }) {
   const [copied, setCopied] = useState(false);
@@ -18,7 +18,7 @@ export function CopyEmail({ email }: { email: string }) {
 
   // No clipboard access: select the visible address so it can be copied by hand.
   function select() {
-    const link = button.current?.parentElement?.parentElement?.querySelector('a[href^="mailto"]');
+    const link = button.current?.closest("ul")?.querySelector("a");
     const selection = window.getSelection();
     if (!link || !selection) return;
     const range = document.createRange();

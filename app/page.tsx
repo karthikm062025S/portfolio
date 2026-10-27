@@ -1,78 +1,122 @@
-import { Art } from "./components/Art";
+import type { CSSProperties, ReactNode } from "react";
 import { CopyEmail } from "./components/CopyEmail";
+import { Diagram } from "./components/Diagram";
+import { DiagramPause } from "./components/DiagramPause";
 import { Icon } from "./components/Icon";
 import { Mark } from "./components/Mark";
 import { ThemeToggle } from "./components/ThemeToggle";
-import { about, contact, education, experience, footer, identity, links, projects } from "./content";
-import turnerLight from "@/public/art/turner-sunset-and-moonrise-light.jpg";
-import turnerDark from "@/public/art/turner-sunset-and-moonrise-dark.jpg";
-import geeseLight from "@/public/art/hiroshige-descending-geese-light.jpg";
-import geeseDark from "@/public/art/hiroshige-descending-geese-dark.jpg";
+import { education, experience, footer, golf, identity, links, nav, projects, showStories, stack, type Story as StoryLines, type Tag } from "./content";
 
-const mailto = `mailto:${links.email}`;
 const external = { target: "_blank", rel: "noopener" } as const;
+const mail = { href: links.compose, ...external, "aria-label": `Email ${links.email} (opens Gmail in a new tab)` };
+// Experience rows arrive one after another; the delay stops growing at the fifth row.
+const stagger = (i: number) => ({ "--i": Math.min(i, 4) }) as CSSProperties;
+
+function Tags({ items, label }: { items: Tag[]; label: string }) {
+  return (
+    <ul className="tags" aria-label={label}>
+      {items.map((t) => <li key={t.label}>{t.mark ? <Mark name={t.mark} /> : t.glyph && <Icon name={t.glyph} />}{t.label}</li>)}
+    </ul>
+  );
+}
+
+// The row's lead tag, visible while the row is closed.
+function Lead({ tag }: { tag: Tag }) {
+  return <span className="r-lead">{tag.mark ? <Mark name={tag.mark} /> : tag.glyph && <Icon name={tag.glyph} />}{tag.label}</span>;
+}
+
+// The row's story: label column, then the line.
+function Story({ lines }: { lines: StoryLines }) {
+  return (
+    <dl className="story">
+      {lines.map((l) => <div key={l.label}><dt className="label">{l.label}</dt><dd>{l.text}</dd></div>)}
+    </dl>
+  );
+}
+
+// "+" that turns into an "x" when the row is open; CSS does the turn.
+const toggle = <span className="pm" aria-hidden="true"><Icon name="plus" /></span>;
+
+function Section({ id, title, sub, children }: { id?: string; title: string; sub?: boolean; children: ReactNode }) {
+  const h = `h-${title.toLowerCase().replace(/\W+/g, "-")}`;
+  return (
+    <section className={sub ? "sec sec-sub" : "sec"} id={id} aria-labelledby={h}>
+      <div className="col">
+        <h2 className="head reveal" id={h}>{title}</h2>
+        {children}
+      </div>
+    </section>
+  );
+}
 
 export default function Home() {
+  const [first, ...rest] = identity.name.split(" ");
   return (
     <>
-      <div className="wash wash-m" aria-hidden="true">
-        <Art light={turnerLight} dark={turnerDark} sizes="100vw" />
-      </div>
-      <header className="wrap top" id="top">
-        <a className="mark" href="#top">{identity.name}</a>
-        <div className="top-r">
+      <header className="nav">
+        <div className="nav-in">
+          <nav aria-label="Sections">
+            <ul>{nav.map((n) => <li key={n.href}><a href={n.href}>{n.label}</a></li>)}</ul>
+          </nav>
           <ThemeToggle />
-          <a href={mailto}>Email<Icon name="arrow-up-right" /></a>
         </div>
       </header>
       <main>
-        <section className="wrap g hero" aria-label="Introduction">
-          <h1 className="name">{identity.name}</h1>
-          <p className="line">{identity.line}</p>
-          <ul className="contact" aria-label="Contact">
-            <li><a href={mailto}><Icon name="envelope" />{links.email}</a></li>
-            <li><CopyEmail email={links.email} /></li>
-            <li>
-              <a href={links.github} {...external} aria-label="GitHub (opens in a new tab)"><Icon name="github-logo" />GitHub<Icon name="arrow-up-right" /></a>
-              <a href={links.linkedin} {...external} aria-label="LinkedIn (opens in a new tab)"><Icon name="linkedin-logo" />LinkedIn<Icon name="arrow-up-right" /></a>
-            </li>
-          </ul>
-        </section>
-        <div className="washrow">
-          <div className="wash wash-d" aria-hidden="true">
-            <Art light={turnerLight} dark={turnerDark} sizes="50vw" />
+        <section className="hero" aria-label="Introduction">
+          <div className="col">
+            <p className="kicker label">{identity.kicker}</p>
+            <h1 className="name"><span><span>{first}</span></span> <span><span>{rest.join(" ")}</span></span></h1>
+            <p className="line">{identity.line}</p>
+            <p className="sub">{identity.sub}</p>
+            <ul className="hlinks" aria-label="Contact">
+              <li><a className="pill" {...mail}><Icon name="envelope" />Email</a></li>
+              <li><a href={links.github} {...external} aria-label="GitHub (opens in a new tab)"><Icon name="github-logo" />GitHub</a></li>
+              <li><a href={links.linkedin} {...external} aria-label="LinkedIn (opens in a new tab)"><Icon name="linkedin-logo" />LinkedIn</a></li>
+            </ul>
           </div>
-          <div className="wrap g"><p className="about">{about.join(" ")}</p></div>
-        </div>
-        <section className="wrap g sec exp" aria-labelledby="h-exp">
-          <h2 className="head reveal" id="h-exp"><span className="num">01</span>Experience</h2>
-          <ol className="rows">
-            {experience.map((r) => (
-              <li key={r.role}>
-                <p className="r-date label"><span>{r.from}</span> <span>{r.to}</span></p>
-                <div className="r-main">
-                  {r.tag && <span className="tag label"><Icon name={r.tag.glyph} size={14} />{r.tag.label}</span>}
-                  <p><span className="role">{r.role}</span>, <span className="place">{r.place}</span></p>
-                  <p className="r-line">{r.line}</p>
-                </div>
+        </section>
+
+        <Section id="experience" title="Experience">
+          <ul className="rows">
+            {experience.map((r, i) => (
+              <li key={r.place} className="x reveal" style={stagger(i)}>
+                <details>
+                  <summary>
+                    <span className="r-date label">{r.date}</span>
+                    <span className="r-title"><b>{r.place}</b> <span className="muted">· {r.role}</span></span>
+                    <span className="r-plain">{r.plain}</span>
+                    {r.tag && <Lead tag={r.tag} />}
+                    {toggle}
+                  </summary>
+                  <div className="r-body">
+                    {r.diagram && <Diagram name={r.diagram} />}
+                    {showStories && r.story ? <Story lines={r.story} /> : r.lines?.map((l) => <p key={l}>{l}</p>)}
+                  </div>
+                </details>
               </li>
             ))}
-          </ol>
-        </section>
-        <section className="wrap g sec proj" aria-labelledby="h-proj">
-          <h2 className="head reveal" id="h-proj"><span className="num">02</span>Projects</h2>
-          <ul className="rows">
+          </ul>
+        </Section>
+
+        <Section id="projects" title="Projects">
+          <ul className="rows reveal">
             {projects.map((p) => (
-              <li key={p.name}>
-                <div className="p-main">
-                  <span className="tag label"><Icon name={p.tag.glyph} size={14} />{p.tag.label}</span>
-                  <h3 className="pname">{p.name}</h3>
-                  <p className="pdesc">{p.lines.join(" ")}</p>
-                  <ul className="stack" aria-label="Built with">
-                    {p.stack.map((s) => <li key={s.mark}><Mark name={s.mark} />{s.name}</li>)}
-                  </ul>
-                </div>
-                <ul className="links">
+              <li key={p.name} className="x proj">
+                <details>
+                  <summary>
+                    <span className="r-title"><b>{p.name}</b></span>
+                    <span className="r-plain">{p.plain}</span>
+                    <Lead tag={p.tag} />
+                    {toggle}
+                  </summary>
+                  <div className="r-body">
+                    <p className="note label">{p.note}</p>
+                    <Diagram name={p.diagram} />
+                    {showStories && <Story lines={p.story} />}
+                    <Tags items={p.stack} label="Built with" />
+                  </div>
+                </details>
+                <ul className="plinks">
                   {p.links.map((l) => (
                     <li key={l.href}><a href={l.href} {...external} aria-label={l.aria}>{l.label}<Icon name="arrow-up-right" /></a></li>
                   ))}
@@ -80,36 +124,47 @@ export default function Home() {
               </li>
             ))}
           </ul>
-        </section>
-        <section className="wrap g sec edu" aria-labelledby="h-edu">
-          <h2 className="head reveal" id="h-edu"><span className="num">03</span>Education</h2>
-          <ul className="rows">
-            <li>
-              <p className="r-date label">{education.date}</p>
-              <div className="r-main">
-                <p>{education.school}</p>
-                <p>{education.interests}</p>
-              </div>
+        </Section>
+
+        <Section id="stack" title="Stack">
+          <ul className="rows sk reveal">
+            {stack.map((g) => (
+              <li key={g.group} className="static">
+                <h3 className="sk-g label">{g.group}</h3>
+                <Tags items={g.items} label={g.group} />
+              </li>
+            ))}
+          </ul>
+        </Section>
+
+        <Section title="Education" sub>
+          <ul className="rows reveal">
+            <li className="static">
+              <span className="r-date label">{education.date}</span>
+              <p>{education.line.split(" · ").map((s, i) => <span key={s}>{i > 0 && " · "}<span className="nw">{s}</span></span>)}</p>
             </li>
           </ul>
-        </section>
-      </main>
-      <section className="band" aria-labelledby="h-contact">
-        <div className="band-art" aria-hidden="true">
-          <Art light={geeseLight} dark={geeseDark} sizes="100vw" />
-        </div>
-        <div className="wrap g band-in">
-          <div>
-            <h2 className="head reveal" id="h-contact"><span className="num">04</span>Contact</h2>
-            <p>{contact.lead}</p>
-            <div className="band-mail">
-              <a href={mailto}><Icon name="envelope" />{links.email}</a>
-              <CopyEmail email={links.email} />
-            </div>
+        </Section>
+
+        <Section id="golf" title="Off the keyboard">
+          <p className="ok-line reveal">{golf}</p>
+        </Section>
+
+        <Section id="contact" title="Contact">
+          <div className="reveal">
+            <ul className="c-icons">
+              <li><a {...mail}><Icon name="envelope" />{links.email}</a></li>
+              <li><CopyEmail email={links.email} /></li>
+              <li className="c-soc">
+                <a href={links.github} {...external} aria-label="GitHub (opens in a new tab)"><Icon name="github-logo" />GitHub</a>
+                <a href={links.linkedin} {...external} aria-label="LinkedIn (opens in a new tab)"><Icon name="linkedin-logo" />LinkedIn</a>
+              </li>
+            </ul>
           </div>
-        </div>
-      </section>
-      <footer className="wrap"><p className="label">{footer}</p></footer>
+        </Section>
+      </main>
+      <footer className="col foot label"><span>{footer.left}</span></footer>
+      <DiagramPause />
     </>
   );
 }
