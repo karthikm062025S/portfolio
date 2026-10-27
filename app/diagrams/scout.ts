@@ -1,11 +1,11 @@
 import type { ArchDiagram } from "./types";
 
-// Scout, production system (origin/master 5b56340). Every node, edge and number is in planning/v5/scout-spec.md with its evidence path.
+// Scout, production system.
 // Read left to right: who triggers, what ingests, what serves, where data lives, what is outside.
 export const scoutMain: ArchDiagram = {
   id: "scout",
   title: "Scout production architecture",
-  desc: "Schedulers trigger a board scanner and feed readers on GitHub Actions runners and a pg_cron fast lane in Supabase. Both write through an ingest webhook and the upsertRole gate into Postgres inside a Vercel and Supabase trust boundary. The browser and an MCP client read the same data. Health checks open GitHub issues when scans fail.",
+  desc: "Schedulers trigger a board scanner and feed readers on GitHub Actions runners and a pg_cron fast lane in Supabase. The Actions lanes post to an ingest webhook and the fast lane scans directly; both write through the upsertRole gate into Postgres inside a Vercel and Supabase trust boundary. The browser and an MCP client read the same data. Health checks open GitHub issues when scans fail.",
   w: 840,
   h: 592,
   zones: [
@@ -96,6 +96,6 @@ export const scoutMain: ArchDiagram = {
     "Under half the endpoints respond: the run exits 1 and a Scout outage issue opens.",
     "A board with a baseline of 3 or more returns zero twice in a row: one standing canary issue (877 of 999 boards are watched).",
     "No green scan for 26 hours: the heartbeat opens its own outage issue.",
-    "A deleted or applied role is found again, or a new row fails the title gate: skipped, zero writes.",
+    "A deleted or applied role is found again, or a new row fails the title gate: skipped, no role written.",
   ],
 };

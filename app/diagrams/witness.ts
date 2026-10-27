@@ -1,7 +1,7 @@
 import type { ArchDiagram } from "./types";
 
-// Witness, as built for the AWS hackathon (March 2026; the public endpoint was removed afterwards). Every node and edge is in
-// planning/v5/witness-spec.md with its evidence path. Read left to right: client, edge, control plane, workers, data, managed model.
+// Witness, as built for the AWS hackathon (March 2026; the public endpoint was removed afterwards).
+// Read left to right: client, edge, control plane, workers, data, managed model.
 export const witnessMain: ArchDiagram = {
   id: "witness",
   title: "Witness AWS serverless architecture",
@@ -94,7 +94,7 @@ export const witnessMain: ArchDiagram = {
     { badge: "B", text: "Off the path: the Lambdas log to CloudWatch, and Stage 2 logs each dropped citation." },
   ],
   fails: [
-    "Each of the three Task states retries twice (2 second interval, backoff 2.0); then Catch sends the execution to HandleError and the orchestrator returns a 500 with the execution ARN.",
+    "Each of the three Task states retries a task failure up to twice (2 second interval, backoff 2.0); then Catch sends the execution to HandleError and the orchestrator returns a 500 with the execution ARN.",
     "A citation with no exact match among the retrieved rows is logged and removed. The check proves the statute exists, not that it applies.",
     "No code rows retrieved: Stage 2 skips Bedrock. No contacts found: Stage 3 falls back to the state DHCD contact.",
     "Keys missing or /analyze fails: the page shows a mock result.",

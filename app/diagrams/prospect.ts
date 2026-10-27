@@ -1,7 +1,6 @@
 import type { ArchDiagram } from "./types";
 
-// Prospect, production system (local master cef556e plus ans-prod). Every node, edge and number is in planning/v5/prospect-spec.md with its evidence path.
-// Owner ruling 2026-10-27: the ANS gate and the GoDaddy identity path are drawn as working parts of the system.
+// Prospect, production system.
 // Read left to right: who calls, what the app does, where data lives, what runs off the path, what is outside.
 export const prospectMain: ArchDiagram = {
   id: "prospect",

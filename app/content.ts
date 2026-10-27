@@ -90,7 +90,7 @@ export const projects: Project[] = [
     story: [
       { label: "Problem", text: "A job board can return HTTP 200 with zero postings. Nothing fails." },
       { label: "Chose", text: "Each board keeps a baseline; one that returned 3 or more postings is flagged after two empty runs." },
-      { label: "Proof", text: "A canary watches 877 of 999 boards, a run where under half answer opens an outage issue, and 450+ tests guard it." },
+      { label: "Proof", text: "A canary watches 877 of 999 boards, a run where under half answer opens an outage issue, and 450+ tests cover it." },
     ],
     stack: [
       { label: "Supabase", mark: "supabase" },
@@ -102,7 +102,7 @@ export const projects: Project[] = [
   {
     name: "Prospect",
     note: "VTHacks 14",
-    plain: "Plans a student's courses and clubs toward a target job; agents read, code decides.",
+    plain: "Plans a student's courses and clubs toward a target job; models read, code decides.",
     tag: { label: "Agentic systems", glyph: "robot" },
     arch: prospectMain,
     story: [
@@ -122,13 +122,13 @@ export const projects: Project[] = [
   {
     name: "Witness",
     note: "Team of four · AWS hackathon · backend and architecture",
-    plain: "Turns a photo of a housing problem into a complaint that cites the exact statute, with every citation checked.",
+    plain: "Turns a photo of a housing problem into a complaint that cites the exact statute, and drops any citation that matches no real one.",
     tag: { label: "Multimodal AI", glyph: "image" },
     arch: witnessMain,
     story: [
       { label: "Problem", text: "A model writing a legal complaint can cite a statute that does not exist." },
       { label: "Chose", text: "Keep a model citation only if its section label exactly matches a statute row retrieved for that request." },
-      { label: "Proof", text: "Every citation checked against 30+ Virginia provisions. It proves existence, not applicability." },
+      { label: "Proof", text: "Each citation the model proposes is checked against 30+ Virginia provisions. It proves existence, not applicability." },
     ],
     stack: [
       { label: "AWS Lambda", mark: "aws" },
