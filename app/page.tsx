@@ -55,6 +55,8 @@ export default function Home() {
     <>
       <header className="nav">
         <div className="nav-in">
+          {/* Docks once the hero name has scrolled under the nav (html.docked, set in the boot script). */}
+          <div className="nav-name"><a href="#" aria-label={`${identity.name}, back to top`}>{first}<span className="last"> {rest.join(" ")}</span></a></div>
           <nav aria-label="Sections">
             <ul>{nav.map((n) => <li key={n.href}><a href={n.href}>{n.label}</a></li>)}</ul>
           </nav>
@@ -66,7 +68,15 @@ export default function Home() {
           <div className="col">
             <p className="kicker label">{identity.kicker}</p>
             <h1 className="name"><span><span>{first}</span></span> <span><span>{rest.join(" ")}</span></span></h1>
-            <p className="line">{identity.line}</p>
+            <p className="line">
+              {identity.lead}{" "}
+              {identity.fields.map((f, i) => (
+                <span key={f.label} className="field" style={{ "--i": i } as CSSProperties}>
+                  {i === identity.fields.length - 1 && "and "}
+                  <Icon name={f.glyph} />{f.label}{i < identity.fields.length - 1 ? ", " : "."}
+                </span>
+              ))}
+            </p>
             <p className="sub">{identity.sub}</p>
             <ul className="hlinks" aria-label="Contact">
               <li><a className="pill" {...mail}><Icon name="envelope" />Email</a></li>

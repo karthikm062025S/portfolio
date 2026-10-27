@@ -91,6 +91,15 @@ html:not(.js) .theme { display: none }
   .nav a { padding-inline: 8px; font-size: 15px }
 }
 @media (min-width: 1440px) { .nav a { font-size: .9375rem } }
+/* The name docks into the nav's left slot: its track opens from 0fr once html.docked is set, and stays out of the tab order until then. */
+.nav-name { display: grid; grid-template-columns: 0fr; visibility: hidden; margin-right: 0 }
+.nav-name a { min-width: 0; overflow: clip; white-space: nowrap; padding-inline: 0; color: var(--ink); font: 400 18px/1 var(--f-serif); letter-spacing: -.02em }
+.nav-in { justify-content: flex-start }
+.nav-in > nav { margin-right: auto }
+html.docked .nav-name { grid-template-columns: 1fr; visibility: visible; margin-right: 16px }
+@media (max-width: 519px) { .nav-name .last { display: none } }
+@media (min-width: 640px) { html.docked .nav-name { margin-right: 24px } }
+@media (min-width: 1024px) { .nav-name a { font-size: calc(20 * var(--k)) } }
 
 /* ---------- Hero ---------- */
 .hero { padding: calc(var(--sp) * .45) 0 calc(var(--sp) * .5) }
@@ -103,6 +112,8 @@ html:not(.js) .theme { display: none }
 .hlinks { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 24px; margin-top: 24px; font-size: calc(15 * var(--k)) }
 .hlinks a { display: inline-flex; align-items: center; gap: 10px; min-height: 48px }
 .hlinks .i { width: 1.15em; height: 1.15em }
+.field { white-space: nowrap }
+.field .i { display: inline-block; width: .95em; height: .95em; margin-right: .3em; vertical-align: -.1em }
 .hlinks .pill { padding-inline: calc(26 * var(--k)); border-radius: 999px; background: var(--pill); color: var(--pill-ink); font-weight: 500 }
 .hlinks .pill:focus-visible { outline-offset: 4px; border-radius: 999px }
 @media (min-width: 768px) {
@@ -269,5 +280,17 @@ html:not(.js) .copy { display: none }
     .nav a, .hlinks a, .plinks a, .c-icons a, summary b, .pm, .hlinks .pill, .copy { transition: color .15s ease-out, background-color .2s ease-out }
   }
 }
+@media (prefers-reduced-motion: no-preference) {
+  .nav-name { transition: grid-template-columns .45s var(--ease-out), margin-right .45s var(--ease-out), visibility 0s .45s }
+  .nav-name a { transition: opacity .3s ease-out; opacity: 0 }
+  html.docked .nav-name { transition: grid-template-columns .45s var(--ease-out), margin-right .45s var(--ease-out), visibility 0s }
+  html.docked .nav-name a { opacity: 1; transition-delay: .12s }
+  /* Each field glyph draws once in orange after the line settles, then turns to ink; the filled dots fade in. */
+  .field .i * { stroke-dasharray: 1000; animation: f-draw .9s var(--ease-out) calc(.75s + var(--i) * .18s) both, f-settle .5s ease-out calc(1.6s + var(--i) * .18s) both }
+  .field .i [fill="currentColor"] { animation: f-fade .3s ease-out calc(1.2s + var(--i) * .18s) both }
+}
+@keyframes f-draw { from { stroke-dashoffset: 1000 } to { stroke-dashoffset: 0 } }
+@keyframes f-settle { from { stroke: var(--orange) } to { stroke: currentColor } }
+@keyframes f-fade { from { opacity: 0 } }
 @keyframes name-rise { from { transform: translateY(105%) } }
 @keyframes hero-settle { from { opacity: 0; transform: translateY(8px) } }

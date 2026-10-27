@@ -10,7 +10,13 @@ export const showStories = true;
 export const identity = {
   name: "Karthik Mandli",
   kicker: "Blacksburg, VA",
-  line: "Computer science at Virginia Tech, class of 2028. Multimodal evaluation, LLM systems, and production data infrastructure.",
+  // The hero line: a lead, then the three fields, each with the glyph its rows use further down.
+  lead: "Computer science at Virginia Tech, class of 2028.",
+  fields: [
+    { label: "Multimodal evaluation", glyph: "ruler" },
+    { label: "LLM systems", glyph: "robot" },
+    { label: "production data infrastructure", glyph: "database" },
+  ] as { label: string; glyph: IconName }[],
   sub: "Open to Summer 2027 SWE and AI internships.",
   description:
     "Karthik Mandli, computer science at Virginia Tech. Multimodal evaluation, LLM systems, data infrastructure. Projects: Scout, Prospect, Witness.",
