@@ -1,4 +1,6 @@
 import type { DiagramName } from "./components/Diagram";
+import { scoutMain } from "./diagrams/scout";
+import type { ArchDiagram } from "./diagrams/types";
 import type { IconName } from "./components/Icon";
 import type { MarkName } from "./components/Mark";
 
@@ -76,7 +78,7 @@ export const experience: ExperienceRow[] = [
 
 export type ProjectLink = { label: string; href: string; aria: string };
 
-export type Project = { name: string; note: string; plain: string; tag: Tag; diagram: DiagramName; story: Story; stack: Tag[]; links: ProjectLink[] };
+export type Project = { name: string; note: string; plain: string; tag: Tag; diagram: DiagramName; arch?: ArchDiagram; story: Story; stack: Tag[]; links: ProjectLink[] };
 
 export const projects: Project[] = [
   {
@@ -85,6 +87,7 @@ export const projects: Project[] = [
     plain: "Pulls fresh internship postings from company job boards on a schedule, and flags when a scan silently returns nothing.",
     tag: { label: "Data infrastructure", glyph: "database" },
     diagram: "scout",
+    arch: scoutMain,
     story: [
       { label: "Problem", text: "A job board can return HTTP 200 with zero postings. Nothing fails." },
       { label: "Chose", text: "A per-board baseline, flagged after two empty runs, so off-season never false-alarms." },

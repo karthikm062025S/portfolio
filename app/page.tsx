@@ -1,5 +1,6 @@
 import type { CSSProperties, ReactNode } from "react";
 import { CopyEmail } from "./components/CopyEmail";
+import { Arch } from "./components/Arch";
 import { Diagram } from "./components/Diagram";
 import { DiagramPause } from "./components/DiagramPause";
 import { Icon } from "./components/Icon";
@@ -123,7 +124,7 @@ export default function Home() {
                   </summary>
                   <div className="r-body">
                     <p className="note label">{p.note}</p>
-                    <Diagram name={p.diagram} />
+                    {p.arch ? <Arch d={p.arch} /> : <Diagram name={p.diagram} />}
                     {showStories && <Story lines={p.story} />}
                     <Tags items={p.stack} label="Built with" />
                   </div>
