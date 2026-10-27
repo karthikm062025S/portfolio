@@ -46,7 +46,6 @@ function ext(n: ArchNode): [number, number] {
     case "client": return [13, 13];
     case "dropped": return [9, 9];
     case "store": return [16, 17];
-    case "queue": return [22, 10];
     case "gate": return [(n.w ?? 30) / 2, 15];
     default: return [R, R];
   }
@@ -150,7 +149,7 @@ function Svg({ d, id, still }: { d: ArchDiagram; id: string; still?: boolean }) 
       <g key={`e${i}`} className={m ? "m" : undefined} style={beat(b)}>
         <path className={cls} d={rounded(pts, 9)} pathLength={1} />
         {!e.noArrow && <path className={`af ch${e.kind === "data" ? " thin" : ""}`} d={chevron(pts)} />}
-        {lab && <g className="af el">{lab}</g>}
+        {lab && <g className="af">{lab}</g>}
       </g>,
     );
   });
@@ -161,7 +160,6 @@ function Svg({ d, id, still }: { d: ArchDiagram; id: string; still?: boolean }) 
     else if (n.kind === "gate") shape = <path className="an" d={boxPath(n.x, n.y, hw, hh)} pathLength={1} />;
     else if (n.kind === "model") shape = <path className="an" d={hexPath(n.x, n.y, R + 2)} pathLength={1} />;
     else if (n.kind === "store") shape = <path className="an" d={cylPath(n.x, n.y)} pathLength={1} />;
-    else if (n.kind === "queue") shape = <path className="an" d={boxPath(n.x, n.y, 22, 10)} pathLength={1} />;
     if (n.kind === "client") gs = 26;
     if (n.kind === "dropped") gs = 14;
     if (n.kind === "store") gs = 0;
@@ -171,7 +169,6 @@ function Svg({ d, id, still }: { d: ArchDiagram; id: string; still?: boolean }) 
       : pos === "right" ? { x: n.x + hw + 8, y: mid, a: "start" as const, up: false }
       : pos === "left" ? { x: n.x - hw - 8, y: mid, a: "end" as const, up: false }
       : pos === "br" ? { x: n.x + hw + 2, y: n.y + hh + 12, a: "start" as const, up: false }
-      : pos === "bl" ? { x: n.x - hw - 2, y: n.y + hh + 12, a: "end" as const, up: false }
       : pos === "tr" ? { x: n.x + hw + 2, y: n.y - hh - 4, a: "start" as const, up: true }
       : { x: n.x - hw - 2, y: n.y - hh - 4, a: "end" as const, up: true };
     parts.push(
@@ -191,20 +188,6 @@ function Svg({ d, id, still }: { d: ArchDiagram; id: string; still?: boolean }) 
       <g key={`b${i}`} className="af badge" style={beat(eb(e))}>
         <circle cx={at[0]} cy={at[1]} r={8} />
         <text x={at[0]} y={at[1] + 4} textAnchor="middle" fontSize={11}>{e.step}</text>
-      </g>,
-    );
-  });
-  (d.notes ?? []).forEach((c, i) => {
-    const tn = typeof c.target === "string" ? nodes[c.target] : undefined;
-    const tp: Pt = tn ? [tn.x, tn.y - ext(tn)[1] - 1] : (c.target as Pt), anchor = c.anchor ?? "start";
-    parts.push(
-      <g key={`c${i}`} className="af note" style={beat(last + 0.3)}>
-        <path d={`M${c.at[0]},${c.at[1] + 5} L${tp[0]},${tp[1]}`} className="lead" />
-        <circle cx={tp[0]} cy={tp[1]} r={2.2} className="dot" />
-        <text x={c.at[0]} y={c.at[1]} textAnchor={anchor} fontSize={11}>
-          <tspan className="nb">{c.lines[0]}</tspan>
-          {c.lines[1] && <tspan x={c.at[0]} dy={13}>{c.lines[1]}</tspan>}
-        </text>
       </g>,
     );
   });

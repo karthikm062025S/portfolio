@@ -1,11 +1,11 @@
-// Data model for the architecture diagrams (app/components/Arch.tsx). One file per project (scout.ts, ...) exports an ArchDiagram[].
+// Data model for the architecture diagrams (app/components/Arch.tsx). One file per project (scout.ts, ...) exports an ArchDiagram.
 // Coordinates are viewBox units; the viewBox is `w` wide (840 for a row) and `h` tall. Everything is hand placed.
 
 export type Pt = [number, number];
 
 // client: glyph only, no ring. service: ring + glyph. gate: rounded square (a deterministic check). model: hexagon.
-// store: cylinder. queue: capsule. cron: ring + clock-like glyph. external: muted ring outside your infra. dropped: muted x.
-export type NodeKind = "client" | "service" | "gate" | "model" | "store" | "queue" | "cron" | "external" | "dropped";
+// store: cylinder. cron: ring + clock-like glyph. external: muted ring outside your infra. dropped: muted x.
+export type NodeKind = "client" | "service" | "gate" | "model" | "store" | "cron" | "external" | "dropped";
 
 // sync: solid. async: dashed. data: thin muted. failure: dotted muted.
 export type EdgeKind = "sync" | "async" | "data" | "failure";
@@ -19,7 +19,7 @@ export type ArchNode = {
   y: number;
   label: string; // "\n" starts a new line (labels are 11 units, keep lines under about 16 characters)
   glyph?: string; // key into app/diagrams/glyphs.tsx; stores and dropped nodes need none
-  pos?: Side | "tl" | "tr" | "bl" | "br"; // where the label sits (default bottom); the corner positions keep it off the edges that leave the node centre
+  pos?: Side | "tl" | "tr" | "br"; // where the label sits (default bottom); the corner positions keep it off the edges that leave the node centre
   w?: number; // gate only: a wider rounded rectangle
 };
 
@@ -43,8 +43,6 @@ export type ArchEdge = {
 export type ArchZone = { label: string; x: number; w: number };
 export type ArchBoundary = { x: number; y: number; w: number; h: number; label: string; labelAt?: number };
 export type ArchStep = { badge: string; text: string };
-// A number callout: a leader from the text to a dot on `target` (a node id or a point).
-export type ArchNote = { target: string | Pt; at: Pt; lines: [string, string?]; anchor?: "start" | "end" };
 
 export type ArchDiagram = {
   id: string;
@@ -58,5 +56,4 @@ export type ArchDiagram = {
   edges: ArchEdge[];
   steps: ArchStep[]; // numbered legend, selectable text under the SVG
   fails?: string[]; // plain lines under the steps: what the dotted edges mean
-  notes?: ArchNote[];
 };

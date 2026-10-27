@@ -79,7 +79,7 @@ section[id] { scroll-margin-top: 72px }
 
 /* ---------- Nav ---------- */
 .nav { position: sticky; top: 0; z-index: 10; background: url(/grain.png) repeat, var(--ground); border-bottom: .5px solid var(--hair) }
-.nav-in { display: flex; justify-content: space-between; align-items: center; min-height: 56px; width: var(--col); margin-inline: auto }
+.nav-in { display: flex; justify-content: flex-start; align-items: center; min-height: 56px; width: var(--col); margin-inline: auto }
 .nav ul { display: flex; margin-left: -4px }
 .nav a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px; padding-inline: 4px; color: var(--muted); font-size: 13px }
 .theme { width: 44px; height: 44px; display: grid; place-items: center; background: none; border: 0; padding: 0; color: var(--ink); cursor: pointer }
@@ -94,7 +94,6 @@ html:not(.js) .theme { display: none }
 /* The name docks into the nav's left slot: its track opens from 0fr once html.docked is set, and stays out of the tab order until then. */
 .nav-name { display: grid; grid-template-columns: 0fr; visibility: hidden; margin-right: 0 }
 .nav-name a { min-width: 0; overflow: clip; white-space: nowrap; padding-inline: 0; color: var(--ink); font: 400 18px/1 var(--f-serif); letter-spacing: -.02em }
-.nav-in { justify-content: flex-start }
 .nav-in > nav { margin-right: auto }
 html.docked .nav-name { grid-template-columns: 1fr; visibility: visible; margin-right: 16px }
 @media (max-width: 519px) { .nav-name .last { display: none } }
@@ -199,15 +198,15 @@ details[open] .pm .i { transform: rotate(45deg) }
 /* ---------- Diagrams ---------- */
 /* Shared frame and keyframes for the architecture diagrams (section below). */
 .dg { margin: 6px 0 4px }
-.dg svg { display: block; width: 100%; height: auto; overflow: visible; color: var(--ink); font-family: var(--f-mono); letter-spacing: .02em }
+.dg .ar-svg { display: block; width: 100%; height: auto; overflow: visible; color: var(--ink); font-family: var(--f-mono); letter-spacing: .02em }
 .dg text { fill: currentColor }
+.dg .m { color: var(--muted) }
 @keyframes dg-draw { from { stroke-dashoffset: 1.01 } to { stroke-dashoffset: 0 } }
 @keyframes dg-fade { from { opacity: 0 } }
 @keyframes dg-settle { from { stroke: var(--orange); stroke-width: 2 } to { stroke: var(--ink); stroke-width: 1.5 } }
 
 /* ---------- Architecture diagrams (Arch.tsx) ---------- */
-/* Same ink-by-default rule as above: everything is complete and still; orange is only the packet and a sync edge while it draws in. */
-.ar-svg { width: 100%; height: auto }
+/* Ink by default: everything is complete and still; orange is only the packet and a sync edge while it draws in. */
 .ar text { paint-order: stroke; stroke: var(--ground); stroke-width: 3px; stroke-linejoin: round; font-size: 11px }
 .ar .zl { fill: var(--muted); text-transform: uppercase; letter-spacing: .08em }
 .ar .tbl { fill: var(--muted) }
@@ -220,16 +219,11 @@ details[open] .pm .i { transform: rotate(45deg) }
 .ar .ch { fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round }
 .ar .badge circle { fill: var(--ink); stroke: none }
 .ar .badge text { fill: var(--ground); stroke: none; font-weight: 500 }
-.ar .note text { fill: var(--muted) }
-.ar .note .nb { fill: var(--ink); font-variant-numeric: tabular-nums }
-.ar .lead { stroke: var(--muted); stroke-width: 1; fill: none }
-.ar .dot { fill: var(--muted) }
 .ar .ap { display: none; fill: none; stroke: var(--orange); stroke-width: 2.5; stroke-linecap: round }
 .ar-steps { margin: 14px 0 0; padding: 0; list-style: none; display: grid; gap: 6px 28px; font: 400 14px/1.45 var(--f-sans) }
 @media (min-width: 720px) { .ar-steps { grid-template-columns: 1fr 1fr } }
 .ar-steps li { display: grid; grid-template-columns: 22px 1fr; column-gap: 10px; align-items: start }
 .ar-steps .bd { display: grid; place-items: center; width: 20px; height: 20px; margin-top: 1px; border-radius: 50%; background: var(--ink); color: var(--ground); font: 500 11px/1 var(--f-mono) }
-.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap }
 .ar-fh { margin: 16px 0 6px }
 .ar-fails { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; font: 400 14px/1.45 var(--f-sans); color: var(--ink) }
 .ar-fails li { padding-left: 16px; position: relative }

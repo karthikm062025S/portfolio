@@ -7,7 +7,7 @@ export function ArchExpand({ title, children }: { title: string; children: React
   const ref = useRef<HTMLDialogElement>(null);
   return (
     <>
-      <button type="button" className="ar-expand" onClick={() => ref.current?.showModal()}>Expand diagram</button>
+      <button type="button" className="ar-expand" onClick={() => ref.current?.showModal()}>Expand diagram<span className="sr">: {title}</span></button>
       <dialog ref={ref} className="ar-dlg" aria-label={title} onClick={(e) => e.target === ref.current && ref.current.close()}>
         <div className="ar-dlg-bar">
           <span className="label">{title}</span>
