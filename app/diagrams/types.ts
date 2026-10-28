@@ -1,5 +1,6 @@
 // Data model for the architecture diagrams (app/components/Arch.tsx). One file per project (scout.ts, ...) exports an ArchDiagram.
-// Coordinates are viewBox units; the viewBox is `w` wide (840 for a row) and `h` tall. Everything is hand placed.
+// Coordinates are viewBox units; the viewBox is `w` wide (840 for a row) and `h` tall. Everything is hand placed, twice: the
+// wide layout below, and `narrow` for phones.
 
 export type Pt = [number, number];
 
@@ -17,10 +18,10 @@ export type ArchNode = {
   kind: NodeKind;
   x: number; // centre
   y: number;
-  label: string; // "\n" starts a new line (labels are 11 units, keep lines under about 16 characters)
+  label: string; // "\n" starts a new line
   glyph?: string; // key into app/diagrams/glyphs.tsx; stores and dropped nodes need none
   pos?: Side | "tl" | "tr" | "br"; // where the label sits (default bottom); the corner positions keep it off the edges that leave the node centre
-  w?: number; // gate only: a wider rounded rectangle
+  w?: number; // gate only: a wider rounded rectangle (the hero check, about 120)
 };
 
 export type ArchEdge = {
@@ -32,16 +33,23 @@ export type ArchEdge = {
   toSide?: Side;
   fromOff?: number; // slide the port along the side, units
   toOff?: number;
-  step?: string; // legend item this edge belongs to: "1".."n" request path (packet plays these in order), "A".."Z" off-path lane
-  badge?: Pt | false; // the step badge sits on the middle of the longest segment; give a point to move it, false to hide it
-  label?: string; // "\n" starts a new line
+  step?: string; // "1".."5": the packet plays these in order (edges sharing a number together, with `parallel`)
+  badge?: Pt | false; // the step badge sits on the middle of the longest segment; give a point to move it, false to hide it (one badge per step)
+  label?: string; // what travels on this edge, 3 words at most; "\n" starts a new line
   labelAt?: Pt; // text anchor (default: beside the middle of the longest segment)
   labelAnchor?: "start" | "middle" | "end";
   noArrow?: boolean; // a branch that joins another line
 };
 
-export type ArchZone = { label: string; x: number; w: number };
-export type ArchBoundary = { x: number; y: number; w: number; h: number; label: string; labelAt?: number };
+// The phone layout (under 640px wide): the same nodes and edges placed again in a narrow viewBox, main line top to bottom.
+// A field left out takes its default, never the wide value; the one exception is an edge's `badge: false`, which carries over.
+export type ArchNarrow = {
+  w: number; // about 340-360, so 14-unit labels render at 12px or more on a 390px phone
+  h: number;
+  nodes: Record<string, Pick<ArchNode, "x" | "y"> & Partial<Pick<ArchNode, "pos" | "label">>>; // every node id
+  edges: Partial<Pick<ArchEdge, "from" | "to" | "via" | "fromSide" | "toSide" | "fromOff" | "toOff" | "badge" | "labelAt" | "labelAnchor">>[]; // one per edge, same order as `edges`; {} for all defaults
+};
+
 export type ArchStep = { badge: string; text: string };
 
 export type ArchDiagram = {
@@ -50,10 +58,10 @@ export type ArchDiagram = {
   desc: string;
   w: number;
   h: number;
-  zones: ArchZone[]; // columns left to right; a hairline rule sits at each x after the first
-  boundary?: ArchBoundary; // the dashed trust boundary
   nodes: ArchNode[];
   edges: ArchEdge[];
-  steps: ArchStep[]; // numbered legend, selectable text under the SVG
-  fails?: string[]; // plain lines under the steps: what the dotted edges mean
+  narrow: ArchNarrow;
+  steps: ArchStep[]; // numbered list under the SVG, one column; the step in play gets a soft tint, synced with the packet
+  labelSize?: number; // node and edge label size in units (default 11)
+  parallel?: boolean; // edges sharing a step number start together, one packet each; the step lasts as long as its longest edge
 };

@@ -1,11 +1,11 @@
-import type { CSSProperties, ReactNode } from "react";
+import { Fragment, type CSSProperties, type ReactNode } from "react";
 import { CopyEmail } from "./components/CopyEmail";
 import { Arch } from "./components/Arch";
 import { DiagramPause } from "./components/DiagramPause";
 import { Icon } from "./components/Icon";
 import { Mark } from "./components/Mark";
 import { ThemeToggle } from "./components/ThemeToggle";
-import { education, experience, footer, golf, identity, links, nav, projects, stack, type Story as StoryLines, type Tag } from "./content";
+import { education, experience, footer, golf, identity, links, nav, projects, stack, type ProjectLink, type Story as StoryLines, type Tag } from "./content";
 
 const external = { target: "_blank", rel: "noopener" } as const;
 const mail = { href: links.compose, ...external, "aria-label": `Email ${links.email} (opens Gmail in a new tab)` };
@@ -23,6 +23,17 @@ function Tags({ items, label }: { items: Tag[]; label: string }) {
 // The row's lead tag, visible while the row is closed.
 function Lead({ tag }: { tag: Tag }) {
   return <span className="r-lead">{tag.mark ? <Mark name={tag.mark} /> : tag.glyph && <Icon name={tag.glyph} />}{tag.label}</span>;
+}
+
+// A project's Live / Code links. Closed rows show them under the row; an open row shows them at the top of its body instead.
+function PLinks({ links }: { links: ProjectLink[] }) {
+  return (
+    <ul className="plinks">
+      {links.map((l) => (
+        <li key={l.href}><a href={l.href} {...external} aria-label={l.aria}>{l.label}<Icon name="arrow-up-right" /></a></li>
+      ))}
+    </ul>
+  );
 }
 
 // The row's story: label column, then the line.
@@ -69,15 +80,16 @@ export default function Home() {
             <p className="kicker label">{identity.kicker}</p>
             <h1 className="name"><span><span>{first}</span></span> <span><span>{rest.join(" ")}</span></span></h1>
             <p className="line">
-              {identity.lead}{" "}
+              {identity.lead}
+              {/* The three fields share one line from tablet up; on a phone they break only between fields. */}
+              <span className="fields">
               {identity.fields.map((f, i) => (
-                <span key={f.label} className="field" style={{ "--i": i } as CSSProperties}>
+                <Fragment key={f.label}>{i > 0 && " "}<span className="field" style={{ "--i": i } as CSSProperties}>
                   {i === identity.fields.length - 1 && "and "}
-                  {/* the glyph never wraps away from its first word */}
-                  <span className="nw"><Icon name={f.glyph} />{f.label.split(" ")[0]}</span>
-                  {f.label.slice(f.label.indexOf(" ") === -1 ? f.label.length : f.label.indexOf(" "))}{i < identity.fields.length - 1 ? ", " : "."}
-                </span>
+                  <Icon name={f.glyph} />{f.label}{i < identity.fields.length - 1 ? "," : "."}
+                </span></Fragment>
               ))}
+              </span>
             </p>
             <p className="sub">{identity.sub}</p>
             <ul className="hlinks" aria-label="Contact">
@@ -121,17 +133,13 @@ export default function Home() {
                     {toggle}
                   </summary>
                   <div className="r-body">
-                    <p className="note label">{p.note}</p>
+                    <div className="r-top"><p className="note label">{p.note}</p><PLinks links={p.links} /></div>
                     <Arch d={p.arch} />
                     <Story lines={p.story} />
                     <Tags items={p.stack} label="Built with" />
                   </div>
                 </details>
-                <ul className="plinks">
-                  {p.links.map((l) => (
-                    <li key={l.href}><a href={l.href} {...external} aria-label={l.aria}>{l.label}<Icon name="arrow-up-right" /></a></li>
-                  ))}
-                </ul>
+                <PLinks links={p.links} />
               </li>
             ))}
           </ul>

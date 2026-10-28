@@ -11,7 +11,7 @@ export const identity = {
   name: "Karthik Mandli",
   kicker: "Blacksburg, VA",
   // The hero line: a lead, then the three fields, each with the glyph its rows use further down.
-  lead: "Computer science at Virginia Tech, class of 2028.",
+  lead: "Computer science at Virginia Tech, class of 2028.", // no-break spaces keep the year with "class" on a phone
   fields: [
     { label: "Multimodal evaluation", glyph: "ruler" },
     { label: "LLM systems", glyph: "robot" },
@@ -81,7 +81,7 @@ export const projects: Project[] = [
   {
     name: "Scout",
     note: "Live",
-    plain: "Pulls fresh internship postings from company job boards on a schedule, and flags when a scan silently returns nothing.",
+    plain: "Pulls fresh internship postings from company job boards on a schedule, and flags when a board silently returns nothing.",
     tag: { label: "Data infrastructure", glyph: "database" },
     arch: scoutMain,
     story: [
@@ -125,7 +125,7 @@ export const projects: Project[] = [
     story: [
       { label: "Problem", text: "A model writing a legal complaint can cite a statute that does not exist." },
       { label: "Chose", text: "Keep a model citation only if its section label exactly matches a statute row retrieved for that request." },
-      { label: "Proof", text: "Each citation the model proposes is checked against 30+ Virginia provisions. It proves existence, not applicability." },
+      { label: "Proof", text: "Every citation the model proposes is checked against a statute store of 30+ Virginia provisions. It proves existence, not applicability." },
     ],
     stack: [
       { label: "AWS Lambda", mark: "aws" },
@@ -197,4 +197,4 @@ export const education = {
 
 export const footer = { left: "Karthik Mandli · 2026" };
 
-export const golf = "I play golf and love traveling to new places.";
+export const golf = "I play golf, love traveling to new places, and usually have a series I'm halfway through.";

@@ -111,12 +111,13 @@ html.docked .nav-name { grid-template-columns: 1fr; visibility: visible; margin-
 .name { font: 400 clamp(38px, 12vw, 56px)/.86 var(--f-serif); letter-spacing: -.035em; font-synthesis: none; text-wrap: nowrap }
 .name > span { display: block; overflow: clip; padding-bottom: .06em; margin-bottom: -.06em }
 .name > span > span { display: block }
-.line { margin-top: 24px; max-width: 34ch; color: var(--ink); font: 500 16px/1.35 var(--f-sans); letter-spacing: -.012em; text-wrap: pretty }
+.line { margin-top: 24px; color: var(--ink); font: 500 16px/1.35 var(--f-sans); letter-spacing: -.012em; text-wrap: pretty }
 .sub { margin-top: calc(14 * var(--k)); color: var(--muted); font-size: calc(15 * var(--k)) }
 .hlinks { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 24px; margin-top: 24px; font-size: calc(15 * var(--k)) }
 .hlinks a { display: inline-flex; align-items: center; gap: 10px; min-height: 48px }
 .hlinks .i { width: 1.15em; height: 1.15em }
-.field .nw { white-space: nowrap }
+.fields { display: block }
+.field { white-space: nowrap }
 .field .i { display: inline-block; width: .95em; height: .95em; margin-right: .3em; vertical-align: -.1em }
 .hlinks .pill { padding-inline: calc(26 * var(--k)); border-radius: 999px; background: var(--pill); color: var(--pill-ink); font-weight: 500 }
 .hlinks .pill:focus-visible { outline-offset: 4px; border-radius: 999px }
@@ -212,10 +213,6 @@ details[open] .pm .i { transform: rotate(45deg) }
 /* ---------- Architecture diagrams (Arch.tsx) ---------- */
 /* Ink by default: everything is complete and still; orange is only the packet and a sync edge while it draws in. */
 .ar text { paint-order: stroke; stroke: var(--ground); stroke-width: 3px; stroke-linejoin: round; font-size: 11px }
-.ar .zl { fill: var(--muted); text-transform: uppercase; letter-spacing: .08em }
-.ar .tbl { fill: var(--muted) }
-.ar .az { fill: none; stroke: var(--hair); stroke-width: 1 }
-.ar .tb { fill: none; stroke: var(--muted); stroke-width: 1; stroke-dasharray: 2 4 }
 .ar .an, .ar .ae, .ar .ad, .ar .ax { fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round }
 .ar .ad, .ar .ch.thin { stroke-width: 1 }
 .ar .dash { stroke-dasharray: 5 4 }
@@ -224,18 +221,18 @@ details[open] .pm .i { transform: rotate(45deg) }
 .ar .badge circle { fill: var(--ink); stroke: none }
 .ar .badge text { fill: var(--ground); stroke: none; font-weight: 500 }
 .ar .ap { display: none; fill: none; stroke: var(--orange); stroke-width: 2.5; stroke-linecap: round }
-.ar-steps { margin: 14px 0 0; padding: 0; list-style: none; display: grid; gap: 6px 28px; font: 400 14px/1.45 var(--f-sans) }
-@media (min-width: 720px) { .ar-steps { grid-template-columns: 1fr 1fr } }
-.ar-steps li { display: grid; grid-template-columns: 22px 1fr; column-gap: 10px; align-items: start }
+/* One SVG per breakpoint: the phone layout under 640px, the wide one above. The hidden one is display:none, so it is read once. */
+.dg .ar-n { display: none }
+@media (max-width: 639.98px) { .dg .ar-w { display: none } .dg .ar-n { display: block; max-width: 400px } }
+/* One column. The step in play gets a soft ink tint (motion only, synced with the packet); the negative margin keeps the text still. */
+.ar-steps { --tint: color-mix(in srgb, var(--ink) 7%, transparent); margin: 14px 0 0; padding: 0; list-style: none; display: grid; gap: 2px; font: 400 14px/1.45 var(--f-sans) }
+.ar-steps li { display: grid; grid-template-columns: 22px 1fr; column-gap: 10px; align-items: start; margin-inline: -6px; padding: 2px 6px; border-radius: 6px }
 .ar-steps .bd { display: grid; place-items: center; width: 20px; height: 20px; margin-top: 1px; border-radius: 50%; background: var(--ink); color: var(--ground); font: 500 11px/1 var(--f-mono) }
-.ar-fh { margin: 16px 0 6px }
-.ar-fails { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; font: 400 14px/1.45 var(--f-sans); color: var(--ink) }
-.ar-fails li { padding-left: 16px; position: relative }
-.ar-fails li::before { content: ""; position: absolute; left: 0; top: .72em; width: 8px; border-top: 1.5px dotted var(--muted) }
-.ar-key { margin: 14px 0 0 }
 .ar-expand, .ar-close { min-height: 44px; min-width: 44px; padding: 0 18px; border: .5px solid var(--hair); border-radius: 999px; background: none; color: var(--ink); font: 400 13px/1 var(--f-mono); cursor: pointer }
 .ar-expand { margin-top: 8px }
 html:not(.js) .ar-expand { display: none }
+/* Expand only where the row diagram renders its labels under 12px: 640-1023px. Phones get the narrow layout instead. */
+@media (max-width: 639.98px), (min-width: 1024px) { .ar-expand { display: none } }
 .ar-dlg { width: min(100vw - 24px, 1400px); max-width: none; max-height: calc(100dvh - 24px); margin: auto; padding: 0; border: .5px solid var(--hair); border-radius: 12px; background: var(--ground); color: var(--ink) }
 .ar-dlg::backdrop { background: rgb(0 0 0 / .45) }
 .ar-dlg[open] { display: flex; flex-direction: column }
@@ -244,7 +241,6 @@ html:not(.js) .ar-expand { display: none }
 .ar-scroll .ar-svg { width: 1344px; max-width: none; height: auto }
 .ar-dlg :focus-visible, .ar-expand:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px }
 @media (prefers-reduced-motion: no-preference) {
-  html.js details[open] .ar .az { stroke-dasharray: 1 1.1; animation: dg-draw .6s var(--ease-out) both }
   html.js details[open] .ar .an { stroke-dasharray: 1 1.1; animation: dg-draw .4s var(--ease-out) calc(var(--s) * .25s) both }
   html.js details[open] .ar .af { animation: dg-fade .3s var(--ease-out) calc(var(--s) * .25s + .12s) both }
   html.js details[open] .ar .ae { stroke-dasharray: 1 1.1; animation: dg-draw .4s var(--ease-out) calc(var(--s) * .25s) both, dg-settle .4s ease-out var(--T) both }
@@ -252,6 +248,8 @@ html:not(.js) .ar-expand { display: none }
   html.js details[open] .ar .ax { animation: dg-fade .4s var(--ease-out) calc(var(--s) * .25s) both }
   html.js details[open] .ar .ap { display: block; animation-duration: var(--cyc); animation-timing-function: linear; animation-delay: calc(var(--T) + .4s); animation-iteration-count: infinite; animation-fill-mode: both }
   html.js details[open] .dg[data-off] .ap { animation-play-state: paused }
+  html.js details[open] .ar-steps li { animation-duration: var(--cyc); animation-timing-function: linear; animation-delay: calc(var(--T) + .4s); animation-iteration-count: infinite; animation-fill-mode: both }
+  html.js details[open] .dg[data-off] .ar-steps li { animation-play-state: paused }
   /* the expanded copy is a still picture */
   html.js details[open] .ar .still * { animation: none }
 }
@@ -260,6 +258,10 @@ html:not(.js) .ar-expand { display: none }
 .proj { display: block }
 .proj details[open] .r-body { padding-bottom: calc(12 * var(--k)) }
 .plinks { display: flex; flex-wrap: wrap; gap: 0 calc(28 * var(--k)); padding: 0 0 calc(14 * var(--k)) }
+.r-top { display: flex; flex-wrap: wrap; align-items: center; gap: 0 calc(28 * var(--k)); margin-bottom: 8px }
+.r-top .note { margin-bottom: 0 }
+.r-top .plinks { padding: 0 }
+.proj:has(details[open]) > .plinks { display: none }
 .plinks a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: calc(14 * var(--k)) }
 
 /* Stack: a spec sheet. Group in mono caps, the tools with their marks */

@@ -5,7 +5,9 @@ import { ArchExpand } from "./ArchExpand";
 
 // Data-driven architecture diagram (types in app/diagrams/types.ts). Grammar: ring + glyph for a service,
 // rounded square for a gate, cylinder for a store, muted x for a drop. The draw-in beats and the travelling packet are CSS
-// (globals.css "Architecture diagrams"); orange is only ever the packet and a sync edge while it draws in.
+// (globals.css "Architecture diagrams"); orange is only ever the packet and a sync edge while it draws in. Two SVGs are drawn,
+// the wide layout and the phone one (d.narrow); CSS shows one per breakpoint. Both run on the wide layout's clock, so the step
+// list stays in sync with whichever is showing.
 
 const STEP = 0.25; // seconds per beat
 const SPEED = 240; // packet units per second
@@ -92,21 +94,23 @@ function longest(p: Pt[]) {
 
 const beat = (s: number) => ({ "--s": s }) as CSSProperties;
 const lines = (s: string) => s.split("\n");
+const pc = (x: number) => `${x.toFixed(2)}%`;
 
-// Multi-line text. `up` makes y the baseline of the LAST line (the block grows upward).
-function Label({ x, y, text, anchor = "middle", up = false }: { x: number; y: number; text: string; anchor?: "start" | "middle" | "end"; up?: boolean }) {
-  const ls = lines(text), y0 = up ? y - (ls.length - 1) * 13 : y;
-  return <text x={x} y={y0} textAnchor={anchor} fontSize={11}>{ls.map((l, i) => <tspan key={i} x={x} dy={i ? 13 : 0}>{l}</tspan>)}</text>;
+// Multi-line text. `up` makes y the baseline of the LAST line (the block grows upward). fs is the label size (11 unless the
+// diagram sets labelSize); every offset below scales with it, so 11 reproduces the original geometry exactly.
+function Label({ x, y, text, anchor = "middle", up = false, fs = 11 }: { x: number; y: number; text: string; anchor?: "start" | "middle" | "end"; up?: boolean; fs?: number }) {
+  const lh = (13 * fs) / 11, ls = lines(text), y0 = up ? y - (ls.length - 1) * lh : y;
+  return <text x={x} y={y0} textAnchor={anchor} fontSize={fs} style={fs === 11 ? undefined : { fontSize: fs }}>{ls.map((l, i) => <tspan key={i} x={x} dy={i ? lh : 0}>{l}</tspan>)}</text>;
 }
 
 type Place = { x: number; y: number; a: "start" | "middle" | "end"; up: boolean };
-function nodeLab(n: ArchNode): Place {
-  const [hw, hh] = ext(n), pos = n.pos ?? "bottom", mid = n.y + 4 - ((lines(n.label).length - 1) * 13) / 2;
-  return pos === "bottom" ? { x: n.x, y: n.y + hh + 14, a: "middle", up: false }
+function nodeLab(n: ArchNode, fs = 11): Place {
+  const k = fs / 11, [hw, hh] = ext(n), pos = n.pos ?? "bottom", mid = n.y + 4 * k - ((lines(n.label).length - 1) * 13 * k) / 2;
+  return pos === "bottom" ? { x: n.x, y: n.y + hh + 14 * k, a: "middle", up: false }
     : pos === "top" ? { x: n.x, y: n.y - hh - 6, a: "middle", up: true }
     : pos === "right" ? { x: n.x + hw + 8, y: mid, a: "start", up: false }
     : pos === "left" ? { x: n.x - hw - 8, y: mid, a: "end", up: false }
-    : pos === "br" ? { x: n.x + hw + 2, y: n.y + hh + 12, a: "start", up: false }
+    : pos === "br" ? { x: n.x + hw + 2, y: n.y + hh + 12 * k, a: "start", up: false }
     : pos === "tr" ? { x: n.x + hw + 2, y: n.y - hh - 4, a: "start", up: true }
     : { x: n.x - hw - 2, y: n.y - hh - 4, a: "end", up: true };
 }
@@ -114,70 +118,75 @@ function edgeLab(e: ArchEdge, pts: Pt[]): Place {
   const L = longest(pts), at = e.labelAt ?? (L.vertical ? ([L.mid[0] + 10, L.mid[1] + 4] as Pt) : ([L.mid[0], L.mid[1] - 8] as Pt));
   return { x: at[0], y: at[1], a: e.labelAnchor ?? (L.vertical && !e.labelAt ? "start" : "middle"), up: !L.vertical || !!e.labelAt };
 }
-// estimated text box (11px mono is about 6.85 units a character), padded; the hairlines and the dashed boundary are cut away behind it
-function textBox(p: Place, text: string, cw = 6.85): [number, number, number, number] {
-  const ls = lines(text), w = Math.max(...ls.map((l) => l.length)) * cw, y0 = p.up ? p.y - (ls.length - 1) * 13 : p.y;
-  const x0 = p.a === "start" ? p.x : p.a === "end" ? p.x - w : p.x - w / 2;
-  return [x0 - 3, y0 - 11, x0 + w + 3, y0 + (ls.length - 1) * 13 + 4];
+
+// The phone layout as a diagram of its own: wide data, narrow positions. Routing falls back to defaults, not the wide values.
+function narrowOf(d: ArchDiagram): ArchDiagram {
+  const n = d.narrow;
+  return {
+    ...d,
+    w: n.w,
+    h: n.h,
+    nodes: d.nodes.map((x) => ({ ...x, pos: undefined, ...n.nodes[x.id] })),
+    edges: d.edges.map((e, i) => ({ from: e.from, to: e.to, kind: e.kind, step: e.step, label: e.label, noArrow: e.noArrow, badge: e.badge === false ? false : undefined, ...n.edges[i] })),
+  };
 }
 
-function Svg({ d, id, still }: { d: ArchDiagram; id: string; still?: boolean }) {
+const place = (d: ArchDiagram) => {
   const nodes = Object.fromEntries(d.nodes.map((n) => [n.id, n]));
-  const edges = d.edges.map((e) => ({ e, pts: route(e, nodes) }));
-  // the request path: edges whose step is a number, in order; the packet plays them one after another
-  const seq = edges.filter(({ e }) => e.step && /^\d+$/.test(e.step)).sort((a, b) => +a.e.step! - +b.e.step!);
-  // beats: zones first, then nodes in step order, then edges in step order
+  return d.edges.map((e) => route(e, nodes));
+};
+
+// Beats and the packet clock, from the wide layout; shared by both SVGs and the step list. Edges are referred to by index.
+function timing(d: ArchDiagram) {
+  const pts = place(d), all = d.edges.map((_, i) => i);
+  // the request path: edges whose step is a number, in order
+  const seq = all.filter((i) => /^\d+$/.test(d.edges[i].step ?? "")).sort((a, b) => +d.edges[a].step! - +d.edges[b].step!);
+  // beats: nodes in step order, then edges in step order
   const order: string[] = [];
   const seen = (x: unknown) => { if (typeof x === "string" && !order.includes(x)) order.push(x); };
-  seq.forEach(({ e }) => { seen(e.from); seen(e.to); });
+  seq.forEach((i) => { seen(d.edges[i].from); seen(d.edges[i].to); });
   d.nodes.forEach((n) => seen(n.id));
   const nb = (nid: string) => 1 + order.indexOf(nid) * 0.35;
   const edgeStart = 1 + order.length * 0.35 + 0.3;
-  const eorder = [...seq.map((s) => s.e), ...d.edges.filter((e) => !seq.some((s) => s.e === e))];
-  const eb = (e: ArchEdge) => edgeStart + eorder.indexOf(e) * 0.22;
+  const eorder = [...seq, ...all.filter((i) => !seq.includes(i))];
+  const eb = (i: number) => edgeStart + eorder.indexOf(i) * 0.22;
   const last = edgeStart + eorder.length * 0.22;
-  // packet timing: constant speed, a short pause at each node, a rest before it loops
-  const segs = seq.map(({ pts }) => Math.max(0.5, plen(pts) / SPEED)), PAUSE = 0.35, REST = 2.5;
-  const cyc = segs.reduce((s, x) => s + x + PAUSE, 0) + REST;
-  const kf = seq.map(({ pts }, i) => {
-    const t = segs.slice(0, i).reduce((a, x) => a + x + PAUSE, 0);
-    const s = (t / cyc) * 100, en = ((t + segs[i]) / cyc) * 100, pd = +((18 / plen(pts)) * 100).toFixed(2);
-    return { pd, css: `@keyframes ${id}-k${i}{0%,${s.toFixed(2)}%{stroke-dashoffset:${pd}}${en.toFixed(2)}%,100%{stroke-dashoffset:-100}}` };
-  });
+  // packet: constant speed, a short pause after each step, a rest before it loops. The edges play one after another; with
+  // `parallel`, edges sharing a step number start together (one packet each) and the step lasts as long as its longest edge.
+  const segs = seq.map((i) => Math.max(0.5, plen(pts[i]) / SPEED)), PAUSE = 0.35, REST = 2.5;
+  const key = (k: number) => (d.parallel ? d.edges[seq[k]].step! : `${k}`);
+  const dur = new Map<string, number>();
+  seq.forEach((_, k) => dur.set(key(k), Math.max(dur.get(key(k)) ?? 0, segs[k])));
+  const start = new Map<string, number>();
+  let t = 0;
+  dur.forEach((x, g) => { start.set(g, t); t = t + x + PAUSE; });
+  const t0 = seq.map((_, k) => start.get(key(k))!);
+  // each step's window in the cycle (first packet out to the end of its pause), for the synced step-line tint
+  const win: Record<string, [number, number]> = {};
+  seq.forEach((i, k) => { const s = d.edges[i].step!, w = win[s], a = t0[k], b = a + segs[k] + PAUSE; win[s] = w ? [Math.min(w[0], a), Math.max(w[1], b)] : [a, b]; });
+  const cyc = t + REST;
+  const clock = { "--T": `${(last * STEP + 0.42).toFixed(2)}s`, "--cyc": `${cyc.toFixed(2)}s` } as CSSProperties;
+  return { seq, nb, eb, segs, t0, win, cyc, clock };
+}
+type Timing = ReturnType<typeof timing>;
 
-  const boxes = [
-    ...edges.filter(({ e }) => e.label).map(({ e, pts }) => textBox(edgeLab(e, pts), e.label!)),
-    ...d.nodes.map((n) => textBox(nodeLab(n), n.label)),
-    ...(d.boundary ? [textBox({ x: d.boundary.labelAt ?? d.boundary.x + d.boundary.w / 2, y: d.boundary.y + 3.5, a: "middle", up: false }, d.boundary.label, 7.6)] : []),
-  ];
-  const cut = `url(#${id}-m)`;
-  const parts: ReactNode[] = [
-    <mask key="mk" id={`${id}-m`} maskUnits="userSpaceOnUse" x={0} y={0} width={d.w} height={d.h}>
-      <rect x={0} y={0} width={d.w} height={d.h} fill="#fff" />
-      {boxes.map((b, i) => <rect key={i} x={b[0]} y={b[1]} width={b[2] - b[0]} height={b[3] - b[1]} fill="#000" />)}
-    </mask>,
-  ];
-  d.zones.forEach((z, i) => {
-    if (i > 0) parts.push(<path key={`zr${i}`} className="az" mask={cut} d={`M${z.x},${d.boundary ? 34 : 14} V${d.h - 6}`} pathLength={1} style={beat(0)} />);
-    parts.push(<text key={`zl${i}`} className="zl af" x={z.x + 8} y={24} fontSize={11} style={beat(0)}>{z.label}</text>);
+function Svg({ d, tm, id, cls, still }: { d: ArchDiagram; tm: Timing; id: string; cls: string; still?: boolean }) {
+  const { seq, nb, eb, segs, t0, cyc, clock } = tm, pts = place(d), fs = d.labelSize ?? 11;
+  // the packet runs on the shared clock; only its dash length (18 units of this layout's path) is per layout. It waits half a
+  // unit off each end of the path, so a round cap never leaves a static orange dot there.
+  const kf = seq.map((ei, k) => {
+    const s = (t0[k] / cyc) * 100, en = ((t0[k] + segs[k]) / cyc) * 100, pd = +((18 / plen(pts[ei])) * 100).toFixed(2);
+    return { pd, css: `@keyframes ${id}-k${k}{0%,${s.toFixed(2)}%{stroke-dashoffset:${pd + 0.5}}${en.toFixed(2)}%,100%{stroke-dashoffset:-100.5}}` };
   });
-  if (d.boundary) {
-    const b = d.boundary, lx = b.labelAt ?? b.x + b.w / 2;
+  const parts: ReactNode[] = [];
+  d.edges.forEach((e, i) => {
+    const m = e.kind === "data" || e.kind === "failure";
+    const ec = e.kind === "sync" ? "ae" : e.kind === "data" ? "ad thin" : e.kind === "async" ? "ax dash" : "ax dots";
+    const lab = e.label && (() => { const l = edgeLab(e, pts[i]); return <Label x={l.x} y={l.y} text={e.label} anchor={l.a} up={l.up} fs={fs} />; })();
     parts.push(
-      <g key="tb" className="af" style={beat(0)}>
-        <rect className="tb" mask={cut} x={b.x} y={b.y} width={b.w} height={b.h} rx={12} />
-        <text className="zl tbl" x={lx} y={b.y + 3.5} textAnchor="middle" fontSize={11}>{b.label}</text>
-      </g>,
-    );
-  }
-  edges.forEach(({ e, pts }, i) => {
-    const m = e.kind === "data" || e.kind === "failure", b = eb(e);
-    const cls = e.kind === "sync" ? "ae" : e.kind === "data" ? "ad thin" : e.kind === "async" ? "ax dash" : "ax dots";
-    const lab = e.label && (() => { const l = edgeLab(e, pts); return <Label x={l.x} y={l.y} text={e.label} anchor={l.a} up={l.up} />; })();
-    parts.push(
-      <g key={`e${i}`} className={m ? "m" : undefined} style={beat(b)}>
-        <path className={cls} d={rounded(pts, 9)} pathLength={1} />
-        {!e.noArrow && <path className={`af ch${e.kind === "data" ? " thin" : ""}`} d={chevron(pts)} />}
+      <g key={`e${i}`} className={m ? "m" : undefined} style={beat(eb(i))}>
+        <path className={ec} d={rounded(pts[i], 9)} pathLength={1} />
+        {!e.noArrow && <path className={`af ch${e.kind === "data" ? " thin" : ""}`} d={chevron(pts[i])} />}
         {lab && <g className="af">{lab}</g>}
       </g>,
     );
@@ -192,56 +201,53 @@ function Svg({ d, id, still }: { d: ArchDiagram; id: string; still?: boolean }) 
     if (n.kind === "client") gs = 26;
     if (n.kind === "dropped") gs = 14;
     if (n.kind === "store") gs = 0;
-    const lab = nodeLab(n);
+    const lab = nodeLab(n, fs);
     parts.push(
       <g key={`n${n.id}`} className={muted ? "m" : undefined} style={beat(b)}>
         {shape}
         <g className="af">
           {n.glyph && gs > 0 && <svg x={n.x - gs / 2} y={n.y - gs / 2} width={gs} height={gs} viewBox="0 0 256 256" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={(1.5 * 256) / gs}>{GLYPHS[n.glyph]}</svg>}
-          <Label x={lab.x} y={lab.y} text={n.label} anchor={lab.a} up={lab.up} />
+          <Label x={lab.x} y={lab.y} text={n.label} anchor={lab.a} up={lab.up} fs={fs} />
         </g>
       </g>,
     );
   });
-  edges.forEach(({ e, pts }, i) => {
+  d.edges.forEach((e, i) => {
     if (!e.step || e.badge === false || e.noArrow) return;
-    const at = e.badge ?? longest(pts).mid;
+    const at = e.badge ?? longest(pts[i]).mid;
     parts.push(
-      <g key={`b${i}`} className="af badge" style={beat(eb(e))}>
+      <g key={`b${i}`} className="af badge" style={beat(eb(i))}>
         <circle cx={at[0]} cy={at[1]} r={8} />
         <text x={at[0]} y={at[1] + 4} textAnchor="middle" fontSize={11}>{e.step}</text>
       </g>,
     );
   });
-  const style = { "--T": `${(last * STEP + 0.42).toFixed(2)}s`, "--cyc": `${cyc.toFixed(2)}s` } as CSSProperties;
   return (
-    <svg className={still ? "ar-svg still" : "ar-svg"} viewBox={`0 0 ${d.w} ${d.h}`} role="img" aria-labelledby={`${id}-t`} aria-describedby={`${id.replace(/-x$/, "")}-steps`} style={style}>
+    <svg className={cls} viewBox={`0 0 ${d.w} ${d.h}`} role="img" aria-labelledby={`${id}-t`} style={clock}>
       <title id={`${id}-t`}>{d.title}</title>
       <desc>{d.desc}</desc>
       {!still && <style>{kf.map((k) => k.css).join("")}</style>}
       {parts}
-      {!still && seq.map(({ pts }, i) => <path key={`p${i}`} className="ap" d={rounded(pts, 9)} pathLength={100} style={{ strokeDasharray: `${kf[i].pd} 100`, animationName: `${id}-k${i}` } as CSSProperties} />)}
+      {!still && seq.map((ei, k) => <path key={`p${k}`} className="ap" d={rounded(pts[ei], 9)} pathLength={100} style={{ strokeDasharray: `${kf[k].pd} 200`, animationName: `${id}-k${k}` } as CSSProperties} />)}
     </svg>
   );
 }
 
 export function Arch({ d }: { d: ArchDiagram }) {
-  const id = `ar-${d.id}`;
+  const id = `ar-${d.id}`, tm = timing(d), c = tm.cyc / 100;
+  const nd = narrowOf(d);
+  // the step line in play gets a soft ink tint (never orange) on the packet's cycle
+  const sk = Object.entries(tm.win).map(([g, [a, b]]) => `@keyframes ${id}-s${g}{0%,${pc(a / c)}{background-color:transparent}${pc(a / c + 0.3)},${pc(b / c)}{background-color:var(--tint)}${pc(b / c + 0.3)},100%{background-color:transparent}}`);
   return (
     <div className="dg ar">
-      <Svg d={d} id={id} />
-      <ol className="ar-steps" id={`${id}-steps`} aria-label="Steps">
-        {d.steps.map((s) => <li key={s.badge}><b className="bd" aria-hidden="true">{s.badge}</b><span><span className="sr">Step {s.badge}: </span>{s.text}</span></li>)}
+      <style>{sk.join("")}</style>
+      <Svg d={d} tm={tm} id={id} cls="ar-svg ar-w" />
+      <Svg d={nd} tm={tm} id={`${id}-n`} cls="ar-svg ar-n" />
+      <ol className="ar-steps" aria-label="Steps" style={tm.clock}>
+        {d.steps.map((s) => <li key={s.badge} style={{ animationName: `${id}-s${s.badge}` }}><b className="bd" aria-hidden="true">{s.badge}</b><span><span className="sr">Step {s.badge}: </span>{s.text}</span></li>)}
       </ol>
-      {d.fails && (
-        <>
-          <p className="label ar-fh">When it fails</p>
-          <ul className="ar-fails">{d.fails.map((f) => <li key={f}>{f}</li>)}</ul>
-        </>
-      )}
-      <p className="label ar-key">Solid: request. Dashed: async. Thin: data. Dotted: failure.</p>
       <ArchExpand title={d.title}>
-        <Svg d={d} id={`${id}-x`} still />
+        <Svg d={d} tm={tm} id={`${id}-x`} cls="ar-svg still" still />
       </ArchExpand>
     </div>
   );
