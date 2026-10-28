@@ -22,19 +22,19 @@
    --pill is the one filled control; the last token is held back for the moving diagrams. */
 :root {
   --ground: var(--l-ground); --ink: var(--l-ink); --muted: var(--l-muted); --hair: var(--l-hair); --accent: var(--l-accent);
-  --pill: #7d2d26; --pill-ink: #f4f1e4; --orange: #d4663c;
+  --pill: #7d2d26; --pill-ink: #f4f1e4; --pill-hover: color-mix(in srgb, var(--pill) 86%, #000); --orange: #d4663c;
   --sun: none; --moon: block; color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --ground: var(--d-ground); --ink: var(--d-ink); --muted: var(--d-muted); --hair: var(--d-hair); --accent: var(--d-accent);
-    --pill: #de8479; --pill-ink: #232b24; --orange: #d9734b;
+    --pill: #de8479; --pill-ink: #232b24; --pill-hover: color-mix(in srgb, var(--pill) 88%, #fff); --orange: #d9734b;
     --sun: block; --moon: none; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --ground: var(--d-ground); --ink: var(--d-ink); --muted: var(--d-muted); --hair: var(--d-hair); --accent: var(--d-accent);
-  --pill: #de8479; --pill-ink: #232b24; --orange: #d9734b;
+  --pill: #de8479; --pill-ink: #232b24; --pill-hover: color-mix(in srgb, var(--pill) 88%, #fff); --orange: #d9734b;
   --sun: block; --moon: none; color-scheme: dark;
 }
 
@@ -175,7 +175,7 @@ summary .r-title, summary .r-plain { padding-right: 48px }
 @media (min-width: 768px) {
   .r-date { font-size: calc(13 * var(--k)) }
   .r-title { font-size: calc(16.5 * var(--k)) }
-  .r-plain { font-size: calc(14.5 * var(--k)) }
+  .r-plain { font-size: max(15px, calc(14.5 * var(--k))) }
   .r-body { padding-bottom: calc(28 * var(--k)); font-size: calc(15 * var(--k)) }
   .pm { top: calc(24 * var(--k) + 10px) }
 }
@@ -225,7 +225,7 @@ details[open] .pm .i { transform: rotate(45deg) }
 .dg .ar-n { display: none }
 @media (max-width: 639.98px) { .dg .ar-w { display: none } .dg .ar-n { display: block; max-width: 400px } }
 /* One column. The step in play gets a soft ink tint (motion only, synced with the packet); the negative margin keeps the text still. */
-.ar-steps { --tint: color-mix(in srgb, var(--ink) 7%, transparent); margin: 14px 0 0; padding: 0; list-style: none; display: grid; gap: 2px; font: 400 14px/1.45 var(--f-sans) }
+.ar-steps { --tint: color-mix(in srgb, var(--ink) 7%, transparent); margin: 14px 0 0; padding: 0; list-style: none; display: grid; gap: 2px; font: 400 15px/1.45 var(--f-sans) }
 .ar-steps li { display: grid; grid-template-columns: 22px 1fr; column-gap: 10px; align-items: start; margin-inline: -6px; padding: 2px 6px; border-radius: 6px }
 .ar-steps .bd { display: grid; place-items: center; width: 20px; height: 20px; margin-top: 1px; border-radius: 50%; background: var(--ink); color: var(--ground); font: 500 11px/1 var(--f-mono) }
 .ar-expand, .ar-close { min-height: 44px; min-width: 44px; padding: 0 18px; border: .5px solid var(--hair); border-radius: 999px; background: none; color: var(--ink); font: 400 13px/1 var(--f-mono); cursor: pointer }
@@ -293,7 +293,7 @@ html:not(.js) .copy { display: none }
 @media (hover: hover) and (pointer: fine) {
   .nav a:hover, .hlinks a:not(.pill):hover, .plinks a:hover, .c-icons a:hover { color: var(--ink) }
   summary:hover b, summary:hover .pm { color: var(--accent) }
-  .hlinks .pill:hover, .copy:hover { background: color-mix(in srgb, var(--pill) 86%, #000) }
+  .hlinks .pill:hover, .copy:hover { background: var(--pill-hover) }
 }
 
 /* ---------- Motion ---------- */

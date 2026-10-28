@@ -52,7 +52,7 @@ export const experience: ExperienceRow[] = [
     plain: "Tested whether vision-language models truly see fine-grained differences or just read the label.",
     tag: { label: "Evaluation", glyph: "ruler" },
     story: [
-      { label: "Question", text: "Do vision-language models see fine-grained differences, or just read the names in the text? Explored over eight months." },
+      { label: "Question", text: "Do vision-language models see fine-grained differences, or just read the names in the text?" },
       { label: "Built", text: "Evaluation pipelines with leakage guards and controls, refined across several framings of the question." },
       { label: "Found", text: "Showed the model was reading, not seeing: removing species names cut accuracy from 86.7% to 25.4% on 5,794 images." },
     ],
@@ -197,4 +197,4 @@ export const education = {
 
 export const footer = { left: "Karthik Mandli · 2026" };
 
-export const golf = "I play golf, love traveling to new places, and usually have a series I'm halfway through.";
+export const golf = "I play golf, love traveling to new places, and watch a lot of movies.";
