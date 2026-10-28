@@ -5,7 +5,7 @@ import { DiagramPause } from "./components/DiagramPause";
 import { Icon } from "./components/Icon";
 import { Mark } from "./components/Mark";
 import { ThemeToggle } from "./components/ThemeToggle";
-import { education, experience, footer, golf, identity, links, nav, projects, stack, type ProjectLink, type Story as StoryLines, type Tag } from "./content";
+import { experience, footer, golf, identity, links, nav, projects, stack, type ProjectLink, type Story as StoryLines, type Tag } from "./content";
 
 const external = { target: "_blank", rel: "noopener" } as const;
 const mail = { href: links.compose, ...external, "aria-label": `Email ${links.email} (opens Gmail in a new tab)` };
@@ -48,10 +48,10 @@ function Story({ lines }: { lines: StoryLines }) {
 // "+" that turns into an "x" when the row is open; CSS does the turn.
 const toggle = <span className="pm" aria-hidden="true"><Icon name="plus" /></span>;
 
-function Section({ id, title, sub, children }: { id?: string; title: string; sub?: boolean; children: ReactNode }) {
+function Section({ id, title, children }: { id?: string; title: string; children: ReactNode }) {
   const h = `h-${title.toLowerCase().replace(/\W+/g, "-")}`;
   return (
-    <section className={sub ? "sec sec-sub" : "sec"} id={id} aria-labelledby={h}>
+    <section className="sec" id={id} aria-labelledby={h}>
       <div className="col">
         <h2 className="head reveal" id={h}>{title}</h2>
         {children}
@@ -121,7 +121,7 @@ export default function Home() {
           </ul>
         </Section>
 
-        <Section id="projects" title="Projects">
+        <Section id="projects" title="Things I've built">
           <ul className="rows reveal">
             {projects.map((p) => (
               <li key={p.name} className="proj">
@@ -145,7 +145,7 @@ export default function Home() {
           </ul>
         </Section>
 
-        <Section id="stack" title="Stack">
+        <Section id="stack" title="What I work with">
           <ul className="rows sk reveal">
             {stack.map((g) => (
               <li key={g.group} className="static">
@@ -153,15 +153,6 @@ export default function Home() {
                 <Tags items={g.items} label={g.group} />
               </li>
             ))}
-          </ul>
-        </Section>
-
-        <Section title="Education" sub>
-          <ul className="rows reveal">
-            <li className="static">
-              <span className="r-date label">{education.date}</span>
-              <p>{education.line.split(" · ").map((s, i) => <span key={s}>{i > 0 && " · "}<span className="nw">{s}</span></span>)}</p>
-            </li>
           </ul>
         </Section>
 

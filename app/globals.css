@@ -135,14 +135,11 @@ html.docked .nav-name { grid-template-columns: 1fr; visibility: visible; margin-
 
 /* ---------- Sections ---------- */
 .sec { padding-top: var(--sp) }
-.sec-sub { padding-top: calc(var(--sp) * .5) }
 #golf { padding-top: calc(var(--sp) * .6) }
 #contact { padding-bottom: var(--sp) }
 .head { margin-bottom: calc(28 * var(--k)); font: 400 30px/1.02 var(--f-serif); letter-spacing: -.025em; font-style: normal; font-synthesis: none }
-.sec-sub .head { font-size: 22px; letter-spacing: -.015em }
 @media (min-width: 768px) {
   .head { font-size: 38px }
-  .sec-sub .head { font-size: calc(24 * var(--k)) }
 }
 @media (min-width: 1024px) {
   .head { font-size: calc(46 * var(--k)) }

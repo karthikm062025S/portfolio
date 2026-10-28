@@ -31,8 +31,8 @@ export const links = {
 
 export const nav = [
   { label: "Experience", href: "#experience" },
-  { label: "Projects", href: "#projects" },
-  { label: "Stack", href: "#stack" },
+  { label: "Built", href: "#projects" },
+  { label: "Tools", href: "#stack" },
   { label: "Contact", href: "#contact" },
 ];
 
@@ -180,7 +180,7 @@ export const stack: { group: string; items: Tag[] }[] = [
   {
     group: "Cloud & tooling",
     items: [
-      { label: "AWS (Lambda, API Gateway, Step Functions, S3, DynamoDB, Bedrock)", mark: "aws" },
+      { label: "AWS", mark: "aws" },
       { label: "Docker", mark: "docker" },
       { label: "CI/CD", glyph: "arrows-clockwise" },
       { label: "Git", mark: "git" },
@@ -189,11 +189,6 @@ export const stack: { group: string; items: Tag[] }[] = [
     ],
   },
 ];
-
-export const education = {
-  date: "2024 – 2028",
-  line: "Virginia Tech · B.S. Computer Science · GPA 3.96 · Dean's List, all semesters",
-};
 
 export const footer = { left: "Karthik Mandli · 2026" };
 
